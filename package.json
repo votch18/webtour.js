@@ -4,7 +4,7 @@
   "description": "A light-weight user's step-by-step guide for your website using Vanilla JS.",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
+    "build": "webpack", 
     "start": "webpack serve --config ./webpack.config.js --mode development",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
