@@ -1,33 +1,33 @@
-export default class WebTour {
+class WebTour {
     constructor(options = {}) {
         this.options = {
-            animate: true,
-            opacity: 0.5,
-            offset: 20,
-            borderRadius: 3,
-            allowClose: true,
-            highlight: true,
-            keyboard: true,
-            width: '300px',
-            zIndex: 10050,
-            removeArrow: false,
-            onNext: () => null,
-            onBack: () => null,
-            ...options,
+        animate: true,
+        opacity: 0.5,
+        offset: 20,
+        borderRadius: 3,
+        allowClose: true,
+        highlight: true,
+        keyboard: true,
+        width: '300px',
+        zIndex: 10050,
+        removeArrow: false,
+        //onNext: () => null,
+        //onBack: () => null,
+        ...options,
         }
 
-        this.Popper = Popper;
-        this.steps = [];
-        this.stepIndex = 0;
-        this.isRunning = false;
-        this.isPaused = false;
+    this.Popper = null;
+    this.steps = [];
+    this.stepIndex = 0;
+    this.isRunning = false;
+    this.isPaused = false;    
+    this.counter = 0;
+    //elements
+    this.window = window;
+    this.document = document;
 
-        //elements
-        this.window = window;
-        this.document = document;
-
-        //events
-        this.onClick = this.onClick.bind(this);
+    //events
+    this.onClick = this.onClick.bind(this);
         this.onResize = this.onResize.bind(this);
         this.onKeyUp = this.onKeyUp.bind(this);
         this.bind();
@@ -47,11 +47,13 @@ export default class WebTour {
     onClick(e) {
         e.stopPropagation();
         if (e.target.classList.contains('wt-btn-next')) {
+            this.onNext();           
             this.next();
         }
 
-        if (e.target.classList.contains('wt-btn-back')) {
-            this.back();
+        if (e.target.classList.contains('wt-btn-back')) {                
+            this.onPrevious();
+            this.previous();
         }
 
         if (e.target.classList.contains('wt-overlay')) {
@@ -73,19 +75,21 @@ export default class WebTour {
         }
 
         //right key for next
-        if (event.keyCode === 39) {           
-           this.next();
+        if (event.keyCode === 39) {       
+            this.onNext();
+            this.next();
         }
-        //left key for back
-        else if (event.keyCode === 37 ) {            
-            this.back();
+            //left key for back
+        else if (event.keyCode === 37 ) {    
+            this.onPrevious();
+            this.previous();
         }
     }
 
     //page is resize update popover
     onResize() {
         if (!this.isRunning) {
-          return;
+            return;
         }    
 
         this.clear();
@@ -114,20 +118,6 @@ export default class WebTour {
         this.render(this.steps[this.stepIndex]);
     }
 
-    pause() {
-        this.isPaused = true;
-    }
-
-    resumeNext() {
-        this.isPaused = false;
-        this.next();
-    }
-
-    resumeBack() {
-        this.isPaused = false;
-        this.back();
-    }
-
     stop() {
         this.clear();
         this.isRunning = false;
@@ -142,13 +132,32 @@ export default class WebTour {
         popover.prepend(loader);
     }
 
-    /**go to next step */
-    next() {
+    moveNext() {
+        this.isPaused = false;
+        console.log(this.isPaused + "-" +this.stepIndex +  "-" +this.steps[this.stepIndex].title);
+        this.next();
+
+    }
+
+    onNext(){
+        
         //execute onNext function()
         if (this.steps[this.stepIndex] && this.steps[this.stepIndex].onNext) this.steps[this.stepIndex].onNext();
-        this.stepIndex++;
+    }
 
-        if (this.isPaused) return;
+    onPrevious(){
+        //execute onBack function()
+        if (this.steps[this.stepIndex] && this.steps[this.stepIndex].onBack) this.steps[this.stepIndex].onBack();
+    }
+
+    /**go to next step */
+    next() {       
+        
+        if (this.isPaused) {
+            return;
+        }
+    
+        this.stepIndex++
 
         this.clear();
 
@@ -159,16 +168,15 @@ export default class WebTour {
             return;
         }
 
-        this.render(this.steps[this.stepIndex]);
+        this.render(this.steps[this.stepIndex]);     
     }
 
-    back() {
-        //execute onBack function()
-        if (this.steps[this.stepIndex] && this.steps[this.stepIndex].onBack) this.steps[this.stepIndex].onBack();
+    previous() {        
+        if (this.isPaused) {
+            return;
+        }
+    
         this.stepIndex--;
-
-        if (this.isPaused) return;
-
         this.clear();
 
         if (this.steps.length === 0) return false;
@@ -188,7 +196,7 @@ export default class WebTour {
         //check if element is present if not make it floating
         if (element) {
             element.style.position = !element.style.position ? 'relative' : element.style.position;
-            const step_highlight = step.highlight ? true : step.highlight;
+            const step_highlight = !step.highlight ? true : step.highlight;
             //highlight is set to true
             if (this.options.highlight && step_highlight ) {
                 element.setAttribute('wt-highlight', 'true');
@@ -239,7 +247,7 @@ export default class WebTour {
 
         //add text
         if (step.title) title.innerText = step.title;
-        content.innerHTML = step.content;
+        content.innerHTML = (step.content ? step.content : '');
         btnNext.innerHTML = (step.btnNext && step.btnNext.text ? step.btnNext.text : (this.stepIndex == this.steps.length - 1 ? 'Done' : 'Next &#8594;'));
         btnBack.innerHTML = (step.btnBack && step.btnBack.text ? step.btnBack.text : (this.stepIndex == 0 ? 'Close' : '	&#8592; Back'));
 
@@ -252,8 +260,8 @@ export default class WebTour {
         ///combine popover component
         if (step.title) popoverInner.append(title);
         popoverInner.append(content);
+        popoverInner.append(btnNext);        
         popoverInner.append(btnBack);
-        popoverInner.append(btnNext);
         popover.append(arrow);
         popover.append(popoverInner);
 
@@ -285,16 +293,16 @@ export default class WebTour {
                 ],
             });
         }
-        /**
-         * if no popper instance but element is present
-         */
+            /**
+                * if no popper instance but element is present
+                */
         else if (!this.Popper && element) {
             this.calculatePosition(element, popover, arrow, step);
         }
-        /**
-         * No element is define 
-         * Make popover floating (position center)
-         */
+            /**
+                * No element is define 
+                * Make popover floating (position center)
+                */
         else {
             popover.classList.add('wt-slides');
             //remove arrow
@@ -324,6 +332,20 @@ export default class WebTour {
         })
     }
 
+    //position from outside of viewport
+    //https://stackoverflow.com/a/442474
+    getOffset( el ) {
+        var _x = 0;
+        var _y = 0;
+        while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) ) {
+            _x += el.offsetLeft - el.scrollLeft;
+            _y += el.offsetTop - el.scrollTop;  
+            el = el.offsetParent;
+        }
+        return { top: _y, left: _x };
+    }
+
+    
     //position popover
     calculatePosition(element, popover, arrow, step) {
         var placement = step.placement ? step.placement : 'auto';
@@ -331,6 +353,11 @@ export default class WebTour {
 
         popover.style.position = strategy;
         arrow.style.position = 'absolute';
+        
+        //element top & left
+        var el_top, el_left;
+        el_top = this.getOffset(element).top;
+        el_left = this.getOffset(element).left;
 
         //if placement is not defined or auto then calculate location
         if (placement == 'auto' || placement == 'auto-start' || placement == 'auto-end') {
@@ -339,14 +366,14 @@ export default class WebTour {
 
             //element is position to the bottom of the screen    
             //position popover to top
-            if (element.getBoundingClientRect().top + (popover.offsetHeight + this.options.offset) > this.window.innerHeight - 100) {
+            if (el_top + (popover.offsetHeight + this.options.offset) > this.window.innerHeight - 100) {
                 //divide the screen into 3 sections
                 //if left is within section 1/3 of the screen then arrow is in the start position
-                if (element.getBoundingClientRect().left < (this.window.innerWidth / 3)) {
+                if (el_left < (this.window.innerWidth / 3)) {
                     new_arrow = arrow.length > 0 ? arrow : '-start';
                 }
-                //if left is within that section 3/3 of the screen then arrow is in the end position
-                else if (element.getBoundingClientRect().left > (this.window.innerWidth - (this.window.innerWidth / 3))) {
+                    //if left is within that section 3/3 of the screen then arrow is in the end position
+                else if (el_left > (this.window.innerWidth - (this.window.innerWidth / 3))) {
                     new_arrow = arrow.length > 0 ? arrow : '-end';
                 }
                 placement = 'top' + new_arrow;
@@ -354,14 +381,14 @@ export default class WebTour {
 
             //element is position to the right side of the screen
             //position popover to the left
-            if ((element.getBoundingClientRect().left + element.offsetWidth + popover.offsetWidth) > this.window.innerWidth) {
+            if ((el_left + element.offsetWidth + popover.offsetWidth) > this.window.innerWidth) {
                 //divide the screen into 3 sections
                 //if left is within section 1/3 of the screen then arrow is in the start position
-                if (element.getBoundingClientRect().top < (this.window.innerHeight / 3)) {
+                if (el_top < (this.window.innerHeight / 3)) {
                     new_arrow = arrow.length > 0 ? arrow : '-start';
                 }
-                //if left is within that section 3/3 of the screen then arrow is in the end position
-                else if (element.getBoundingClientRect().top > (this.window.innerHeight - (this.window.innerHeight / 3))) {
+                    //if left is within that section 3/3 of the screen then arrow is in the end position
+                else if (el_top > (this.window.innerHeight - (this.window.innerHeight / 3))) {
                     new_arrow = arrow.length > 0 ? arrow : '-start';
                 }
                 placement = 'left' + new_arrow;
@@ -369,14 +396,14 @@ export default class WebTour {
 
             //element is position to the left side of the screen
             //position popover to the right
-            if (element.getBoundingClientRect().left < popover.offsetWidth && (element.offsetWidth + popover.offsetWidth) < this.window.innerWidth) {
+            if (el_left < popover.offsetWidth && (element.offsetWidth + popover.offsetWidth) < this.window.innerWidth) {
                 //divide the screen into 3 sections
                 //if left is within section 1/3 of the screen then arrow is in the start position
-                if (element.getBoundingClientRect().top < (this.window.innerHeight / 3)) {
+                if (el_top < (this.window.innerHeight / 3)) {
                     new_arrow = arrow.length > 0 ? arrow : '-start';
                 }
-                //if left is within that section 3/3 of the screen then arrow is in the end position
-                else if (element.getBoundingClientRect().top > (this.window.innerHeight - (this.window.innerHeight / 3))) {
+                    //if left is within that section 3/3 of the screen then arrow is in the end position
+                else if (el_top > (this.window.innerHeight - (this.window.innerHeight / 3))) {
                     new_arrow = arrow.length > 0 ? arrow : '-start';
                 }
                 placement = 'right' + new_arrow;
@@ -384,14 +411,14 @@ export default class WebTour {
 
             //element is position to the top of the screen    
             //position popover to bottom
-            if (element.getBoundingClientRect().top < (popover.offsetHeight + this.options.offset) || element.getBoundingClientRect().top < 100) {
+            if (el_top < (popover.offsetHeight + this.options.offset) || el_top < 100) {
                 //divide the screen into 3 sections
                 //if left is within section 1/3 of the screen then arrow is in the start position
-                if (element.getBoundingClientRect().left < (this.window.innerWidth / 3)) {
+                if (el_left < (this.window.innerWidth / 3)) {
                     new_arrow = arrow.length > 0 ? arrow : '-start';
                 }
-                //if left is within that section 3/3 of the screen then arrow is in the end position
-                else if (element.getBoundingClientRect().left > (this.window.innerWidth - (this.window.innerWidth / 3))) {
+                    //if left is within that section 3/3 of the screen then arrow is in the end position
+                else if (el_left > (this.window.innerWidth - (this.window.innerWidth / 3))) {
                     new_arrow = arrow.length > 0 ? arrow : '-end';
                 }
                 placement = 'bottom' + new_arrow;
@@ -403,50 +430,54 @@ export default class WebTour {
 
         //top
         if (placement == 'top') {
-            popover.style.top = (element.getBoundingClientRect().top - (popover.offsetHeight + this.options.offset)) + 'px';
-            popover.style.left = (element.getBoundingClientRect().left + ((element.offsetWidth / 2) - (popover.offsetWidth / 2))) + 'px';
+            popover.style.top = (el_top - (popover.offsetHeight + this.options.offset)) + 'px';
+            popover.style.left = (el_left + ((element.offsetWidth / 2) - (popover.offsetWidth / 2))) + 'px';
         } else if (placement == 'top-start') {
-            popover.style.top = (element.getBoundingClientRect().top - (popover.offsetHeight + this.options.offset)) + 'px';
-            popover.style.left = element.getBoundingClientRect().left + 'px';
+            popover.style.top = (el_top - (popover.offsetHeight + this.options.offset)) + 'px';
+            popover.style.left = el_left + 'px';
         } else if (placement == 'top-end') {
-            popover.style.top = (element.getBoundingClientRect().top - (popover.offsetHeight + this.options.offset)) + 'px';
-            popover.style.left = ((element.getBoundingClientRect().left + element.offsetWidth) - popover.offsetWidth) + 'px';
+            popover.style.top = (el_top - (popover.offsetHeight + this.options.offset)) + 'px';
+            popover.style.left = ((el_left + element.offsetWidth) - popover.offsetWidth) + 'px';
         }
 
-        //bottom
+            //bottom
         else if (placement == 'bottom') {
-            popover.style.top = (element.getBoundingClientRect().top + element.offsetHeight) + this.options.offset + 'px';
-            popover.style.left = (element.getBoundingClientRect().left + (element.offsetWidth / 2) - popover.offsetWidth / 2) + 'px';
+            popover.style.top = (el_top + element.offsetHeight) + this.options.offset + 'px';
+            popover.style.left = (el_left + (element.offsetWidth / 2) - popover.offsetWidth / 2) + 'px';
         } else if (placement == 'bottom-start') {
-            popover.style.top = (element.getBoundingClientRect().top + element.offsetHeight) + this.options.offset + 'px';
-            popover.style.left = (element.getBoundingClientRect().left) + 'px';
+            popover.style.top = (el_top + element.offsetHeight) + this.options.offset + 'px';
+            popover.style.left = (el_left) + 'px';
         } else if (placement == 'bottom-end') {
-            popover.style.top = (element.getBoundingClientRect().top + element.offsetHeight) + this.options.offset + 'px';
-            popover.style.left = ((element.getBoundingClientRect().left + element.offsetWidth) - popover.offsetWidth) + 'px';
+            popover.style.top = (el_top + element.offsetHeight) + this.options.offset + 'px';
+            popover.style.left = ((el_left + element.offsetWidth) - popover.offsetWidth) + 'px';
         }
 
-        //left
+            //left
         else if (placement == 'right') {
-            popover.style.top = (element.getBoundingClientRect().top + (popover.offsetHeight / 2) - (element.offsetHeight / 2)) + 'px';
-            popover.style.left = (element.getBoundingClientRect().left + (element.offsetWidth + this.options.offset)) + 'px';
+            popover.style.top = (el_top + (popover.offsetHeight / 2) - (element.offsetHeight / 2)) + 'px';
+            popover.style.left = (el_left + (element.offsetWidth + this.options.offset)) + 'px';
         } else if (placement == 'right-start') {
-            popover.style.top = element.getBoundingClientRect().top + 'px';
-            popover.style.left = (element.getBoundingClientRect().left + (element.offsetWidth + this.options.offset)) + 'px';
+            popover.style.top = el_top + 'px';
+            popover.style.left = (el_left + (element.offsetWidth + this.options.offset)) + 'px';
         } else if (placement == 'right-end') {
-            popover.style.top = ((element.getBoundingClientRect().top + element.offsetHeight) - popover.offsetHeight) + 'px';
-            popover.style.left = (element.getBoundingClientRect().left + (element.offsetWidth + this.options.offset)) + 'px';
+            popover.style.top = ((el_top + element.offsetHeight) - popover.offsetHeight) + 'px';
+            popover.style.left = (el_left + (element.offsetWidth + this.options.offset)) + 'px';
         }
 
-        //right
+            //right
         else if (placement == 'left') {
-            popover.style.top = (element.getBoundingClientRect().top + (popover.offsetHeight / 2) - (element.offsetHeight / 2)) + 'px';
-            popover.style.left = (element.getBoundingClientRect().left - (popover.offsetWidth + this.options.offset)) + 'px';
+            popover.style.top = (el_top + (popover.offsetHeight / 2) - (element.offsetHeight / 2)) + 'px';
+            popover.style.left = (el_left - (popover.offsetWidth + this.options.offset)) + 'px';
         } else if (placement == 'left-start') {
-            popover.style.top = element.getBoundingClientRect().top + 'px';;
-            popover.style.left = (element.getBoundingClientRect().left - (popover.offsetWidth + this.options.offset)) + 'px';
+            popover.style.top = el_top + 'px';;
+            popover.style.left = (el_left - (popover.offsetWidth + this.options.offset)) + 'px';
         } else if (placement == 'left-end') {
-            popover.style.top = ((element.getBoundingClientRect().top + element.offsetHeight) - popover.offsetHeight) + 'px';
-            popover.style.left = (element.getBoundingClientRect().left - (popover.offsetWidth + this.options.offset)) + 'px';
+            popover.style.top = ((el_top + element.offsetHeight) - popover.offsetHeight) + 'px';
+            popover.style.left = (el_left - (popover.offsetWidth + this.options.offset)) + 'px';
         }
+
+        popover.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
+
+
     }
 }
