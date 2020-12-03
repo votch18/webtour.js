@@ -1,36 +1,45 @@
 class WebTour {
-    constructor(options = {}) {
-        this.options = {
-        animate: true,
-        opacity: 0.5,
-        offset: 20,
-        borderRadius: 3,
-        allowClose: true,
-        highlight: true,
-        keyboard: true,
-        width: '300px',
-        zIndex: 10050,
-        removeArrow: false,
-        //onNext: () => null,
-        //onBack: () => null,
-        ...options,
+    constructor(options = {}) {        
+        if (!!this.constructor.instance) {
+            return this.constructor.instance;
         }
 
-    this.Popper = null;
-    this.steps = [];
-    this.stepIndex = 0;
-    this.isRunning = false;
-    this.isPaused = false;    
-    this.counter = 0;
-    //elements
-    this.window = window;
-    this.document = document;
+        this.constructor.instance = this;
+        this.constructor.instance = this;
 
-    //events
-    this.onClick = this.onClick.bind(this);
+        this.options = {
+            animate: true,
+            opacity: 0.5,
+            offset: 20,
+            borderRadius: 3,
+            allowClose: true,
+            highlight: true,
+            keyboard: true,
+            width: '300px',
+            zIndex: 10050,
+            removeArrow: false,
+            //onNext: () => null,
+            //onBack: () => null,
+            ...options,
+            }
+
+        this.Popper = null;
+        this.steps = [];
+        this.stepIndex = 0;
+        this.isRunning = false;
+        this.isPaused = false;    
+        this.counter = 0;
+        //elements
+        this.window = window;
+        this.document = document;
+
+        //events
+        this.onClick = this.onClick.bind(this);
         this.onResize = this.onResize.bind(this);
         this.onKeyUp = this.onKeyUp.bind(this);
         this.bind();
+
+        return this;
     }
 
     bind() {
@@ -103,6 +112,7 @@ class WebTour {
 
     //set web tour steps
     setSteps(steps) {
+        this.steps = null;
         this.steps = steps;
     }
 
@@ -134,13 +144,10 @@ class WebTour {
 
     moveNext() {
         this.isPaused = false;
-        console.log(this.isPaused + "-" +this.stepIndex +  "-" +this.steps[this.stepIndex].title);
         this.next();
-
     }
 
-    onNext(){
-        
+    onNext(){        
         //execute onNext function()
         if (this.steps[this.stepIndex] && this.steps[this.stepIndex].onNext) this.steps[this.stepIndex].onNext();
     }
@@ -157,8 +164,7 @@ class WebTour {
             return;
         }
     
-        this.stepIndex++
-
+        this.stepIndex++;
         this.clear();
 
         if (this.steps.length === 0) return false;
@@ -356,8 +362,8 @@ class WebTour {
         
         //element top & left
         var el_top, el_left;
-        el_top = this.getOffset(element).top;
-        el_left = this.getOffset(element).left;
+        el_top =  this.window.innerHeight > screen.height ? this.getOffset(element).top : element.getBoundingClientRect().top;
+        el_left = this.window.innerWidth > screen.width ?  this.getOffset(element).left : element.getBoundingClientRect().left;
 
         //if placement is not defined or auto then calculate location
         if (placement == 'auto' || placement == 'auto-start' || placement == 'auto-end') {
