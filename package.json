@@ -2,34 +2,37 @@
   "name": "webtour",
   "version": "1.0.0",
   "description": "A light-weight user's step-by-step guide for your website using Vanilla JS.",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "build": "webpack", 
-    "start": "webpack serve --config ./webpack.config.js --mode development",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "minify-css": "npx cleancss -o dist/webtour.min.css src/webtour.css",
+    "minify-js": "npx babel dist/webtour.js --out-file dist/webtour.min.js --presets minify",
+    "build": "rollup -c && npm run minify-js && npm run minify-css"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/votch18/WebTour.git"
   },
-  "keywords": [],
-  "author": "Julious Mark de Leon",
-  "license": "ISC",
+  "keywords": [
+    "\"web",
+    "tour\"",
+    "\"user's",
+    "walkthrough\""
+  ],
+  "author": "JM de Leon <votch22@gmail.com>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/votch18/WebTour/issues"
   },
   "homepage": "https://github.com/votch18/WebTour#readme",
+  "dependencies": {},
   "devDependencies": {
+    "@babel/cli": "^7.12.8",
     "@babel/core": "^7.12.9",
     "@babel/preset-env": "^7.12.7",
-    "@popperjs/core": "^2.5.4",
-    "and": "0.0.3",
-    "babel-loader": "^8.2.2",
-    "html-loader": "^1.3.2",
-    "html-webpack-plugin": "^4.5.0",
-    "webpack": "^5.9.0",
-    "webpack-cli": "^4.2.0",
-    "webpack-dev-server": "^3.11.0",
-    "webpack-html-plugin": "^0.1.1"
+    "@rollup/plugin-babel": "^5.2.2",
+    "@rollup/plugin-node-resolve": "^11.0.0",
+    "babel-preset-minify": "^0.5.1",
+    "clean-css-cli": "^4.3.0",
+    "rollup": "^2.34.2"
   }
 }

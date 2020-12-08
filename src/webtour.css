@@ -1,0 +1,215 @@
+*[wt-highlight=true] {
+    z-index: 10050
+}
+
+.wt-overlay {
+    position: absolute;
+    background: #000;
+    opacity: .5
+}
+
+.wt-popover {
+    position: absolute;
+    background: #fff;
+    color: #2d2d2d;
+    box-shadow: 0 1px 10px rgba(0, 0, 0, .4);
+    min-width: 300px
+}
+
+.wt-popover.wt-slides {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    max-height: 100%;
+    overflow-y: auto;
+    -ms-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%)
+}
+
+.wt-popover-inner {
+    margin: 0;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: hidden
+}
+
+.wt-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700
+}
+
+.wt-content {
+    padding-bottom: 10px
+}
+
+.wt-popover::-webkit-scrollbar {
+    width: 6px
+}
+
+.wt-popover::-webkit-scrollbar-track {
+    -webkit-box-shadow: none
+}
+
+.wt-popover::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, .2);
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .2)
+}
+
+.wt-popover::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(68, 23, 23, .2)
+}
+
+.wt-btns {
+    border: none;
+    box-shadow: none;
+    border-radius: 3px;
+    font-weight: 600;
+    padding: 6px 15px;
+    margin: 0;
+    color: #fff;
+    cursor: pointer;
+    min-width: 80px
+}
+
+.wt-btns.wt-btn-back {
+    float: right;
+    margin-right: 5px
+}
+
+.wt-btns.wt-btn-next {
+    float: right
+}
+
+.wt-arrow,
+.wt-arrow::before {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    z-index: -1
+}
+
+.wt-arrow::before {
+    content: '';
+    transform: rotate(45deg);
+    background: #fff
+}
+
+.wt-popover.top>.wt-arrow {
+    bottom: -7px;
+    left: 50%;
+    -ms-transform: translateX(-50%);
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%)
+}
+
+.wt-popover.top-start>.wt-arrow {
+    bottom: -7px;
+    left: 15px
+}
+
+.wt-popover.top-end>.wt-arrow {
+    bottom: -7px;
+    right: 15px
+}
+
+.wt-popover.bottom>.wt-arrow {
+    top: -7px;
+    left: 50%;
+    -ms-transform: translateX(-50%);
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%)
+}
+
+.wt-popover.bottom-start>.wt-arrow {
+    top: -7px;
+    left: 15px
+}
+
+.wt-popover.bottom-end>.wt-arrow {
+    top: -7px;
+    right: 15px
+}
+
+.wt-popover.left>.wt-arrow {
+    top: 50%;
+    right: -7px;
+    -ms-transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%)
+}
+
+.wt-popover.left-start>.wt-arrow {
+    top: 15px;
+    right: -7px
+}
+
+.wt-popover.left-end>.wt-arrow {
+    bottom: 15px;
+    right: -7px
+}
+
+.wt-popover.right>.wt-arrow {
+    top: 50%;
+    left: -7px;
+    -ms-transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%)
+}
+
+.wt-popover.right-start>.wt-arrow {
+    top: 15px;
+    left: -7px
+}
+
+.wt-popover.right-end>.wt-arrow {
+    bottom: 15px;
+    left: -7px
+}
+
+.wt-loader {
+    height: 3px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    background: #fff
+}
+
+.wt-loader:before {
+    display: block;
+    position: absolute;
+    content: "";
+    left: -200px;
+    width: 200px;
+    height: 3px;
+    background-color: #7cd1f9;
+    animation: loading 2s linear infinite
+}
+
+@keyframes loading {
+    from {
+        left: -200px;
+        width: 30%
+    }
+
+    50% {
+        width: 30%
+    }
+
+    70% {
+        width: 70%
+    }
+
+    80% {
+        left: 50%
+    }
+
+    95% {
+        left: 120%
+    }
+
+    to {
+        left: 100%
+    }
+}

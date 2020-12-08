@@ -1,11 +1,6 @@
-class WebTour {    
+export default class WebTour {    
     constructor(options = {}) {
-        if (!!this.constructor.instance) {
-        return this.constructor.instance;
-    }
-
-    this.constructor.instance = this;
-
+       
     this.options = {
         animate: true,
         opacity: 0.5,
@@ -39,7 +34,6 @@ class WebTour {
         
         this.bind();
 
-        return this;
     }
 
     bind() {
@@ -206,7 +200,7 @@ class WebTour {
             //check if element is present if not make it floating
             if (element) {
                 element.style.position = !element.style.position ? 'relative' : element.style.position;
-                const step_highlight = !step.highlight ? true : step.highlight;
+                const step_highlight = !step.highlight ? true : step.highlight;                
                 //highlight is set to true
                 if (this.options.highlight && step_highlight ) {
                     element.setAttribute('wt-highlight', 'true');
@@ -304,12 +298,26 @@ class WebTour {
                     this.positionOverlay(element, overlay1, overlay2, overlay3, overlay4);
                 }            
             }
-            /**
-            * No element is define
-            * Make popover floating (position center)
-            */
-            else {
+                /**
+                * No element is define
+                * Make popover floating (position center)
+                */
+            else if (!element){                
                 popover.classList.add('wt-slides');
+                popover.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
+
+                if (this.options.highlight){
+                    var overlay = document.createElement('div');
+                    overlay.classList.add('wt-overlay', 'open');
+                    overlay.style.zIndex = this.options.zIndex - 10;
+                    overlay.style.position = 'fixed';
+                    overlay.style.top = 0;
+                    overlay.style.left = 0;
+                    overlay.style.right = 0;
+                    overlay.style.bottom = 0;
+                    this.document.body.appendChild(overlay);
+                }                
+
                 arrow.remove();
             }
 
@@ -497,19 +505,23 @@ class WebTour {
                 popover.style.top = (el_top + (popover.offsetHeight / 2) - ((element.offsetHeight + this.options.highlightOffset) / 2)) + 'px';
                 popover.style.left = (el_left - (popover.offsetWidth + this.options.offset)) + 'px';
             } else if (placement == 'left-start') {
-                popover.style.top = el_top - this.options.highlightOffset + 'px';;
+                popover.style.top = el_top - this.options.highlightOffset + 'px';
                 popover.style.left = (el_left - (popover.offsetWidth + this.options.offset)) + 'px';
             } else if (placement == 'left-end') {
                 popover.style.top = ((el_top + element.offsetHeight) - popover.offsetHeight) + this.options.highlightOffset + 'px';
                 popover.style.left = (el_left - (popover.offsetWidth + this.options.offset)) + 'px';
             }
 
-            popover.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
+            //if position is fixed scroll to top
+            if (strategy === 'fixed'){
+                this.window.scrollTo(0, 0);
+            }else{
+                popover.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
+            }            
         }
 
         positionOverlay(element, overlay1, overlay2, overlay3, overlay4){
-            var window = this.getWindowOffset();
-
+            
             //element top & left
             var el_top, el_left;
             el_top = this.getElementPosition(element).top; 

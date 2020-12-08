@@ -1,6 +1,5 @@
 node_modules/
 webpack.config.js
-dist/
 index.html
 index_backup_2.js
 index_backup.js
