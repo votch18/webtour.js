@@ -87,7 +87,7 @@ const steps = [
             const isPresent = setInterval(function(){
                 const nextTarget = document.querySelector('#step_3');
                 if (nextTarget){
-                    clearInterval(isPresent);   //important so that your tour will not iterated until end
+                    clearInterval(isPresent);   //important to prevent your tour to not iterate until end
                     wt.moveNext();              //go to next step - equivalent to  wt.isPuased = false; wt.next();
                 }
             }, 100)
