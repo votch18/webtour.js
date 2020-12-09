@@ -14,7 +14,7 @@ A light-weight user's step-by-step guide for your website using Vanilla JS.
 
 ## How does WebTour highlight works?
 
-Highlight works adding overlay to the page except for the highlighted element. It is basically an overlay with a hole showing the element that is highlighted. WebTour can highlight even on modals.
+WebTour highlight works by adding overlay to the page except for the highlighted element. It is basically an overlay with a hole showing the element that is highlighted. WebTour can highlight even on modals.
 
 ## Installation
 
