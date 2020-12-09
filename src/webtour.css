@@ -1,11 +1,13 @@
 *[wt-highlight=true] {
-    z-index: 10050
+    z-index: 10050;
+    transition: all 1s ease;
 }
 
 .wt-overlay {
     position: absolute;
     background: #000;
-    opacity: .5
+    opacity: .5;
+    transition: all 1s ease;
 }
 
 .wt-popover {
@@ -13,7 +15,8 @@
     background: #fff;
     color: #2d2d2d;
     box-shadow: 0 1px 10px rgba(0, 0, 0, .4);
-    min-width: 300px
+    min-width: 300px;
+    transition: all 1s ease;
 }
 
 .wt-popover.wt-slides {
@@ -24,7 +27,8 @@
     overflow-y: auto;
     -ms-transform: translateX(-50%) translateY(-50%);
     -webkit-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%)
+    transform: translate(-50%, -50%);
+    transition: all 1s ease;
 }
 
 .wt-popover-inner {

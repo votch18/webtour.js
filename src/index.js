@@ -18,11 +18,10 @@ export default class WebTour {
         ...options,
         }
            
-    this.steps =[];
+    this.steps = [];
     this.stepIndex = 0;
     this.isRunning = false;
     this.isPaused = false;
-    this.counter = 0;
     //elements
     this.window = window;
     this.document = document;
@@ -99,11 +98,6 @@ export default class WebTour {
         this.render(this.steps[this.stepIndex]);
     }
 
-    //set popper instance if you want to use popper engine
-    setPopperInstance(Popper){
-        this.Popper = Popper;
-    }
-
     //set web tour steps
     setSteps(steps) {
         this.steps = null;
@@ -115,6 +109,14 @@ export default class WebTour {
         return this.steps;
     }
 
+
+    highlight(element){
+        var element = this.document.querySelector(element);
+        if (element){
+            this.createOverlay(element)
+        }        
+    }
+
     //start the web tour
     start(startIndex = 0) {
         this.isRunning = true;
@@ -122,440 +124,434 @@ export default class WebTour {
         this.render(this.steps[this.stepIndex]);
     }
 
-        stop() {
-            this.clear();
-            this.isRunning = false;
+    stop() {
+        this.clear();
+        this.isRunning = false;
+    }
+
+    //show loader progress
+    showLoader() {
+        const popover = this.document.querySelector('.wt-popover');
+        const loader = this.document.createElement('div');
+        loader.classList.add('wt-loader');
+        loader.style.zIndex = this.options.zIndex + 10;
+        popover.prepend(loader);
+    }
+
+    moveNext() {
+        this.isPaused = false;
+        this.next();
+    }
+
+    movePrevious() {
+        this.isPaused = false;
+        this.previous();
+    }
+
+    onNext(){
+        if (this.isPaused) return;
+        //execute onNext function()
+        if (this.steps[this.stepIndex] && this.steps[this.stepIndex].onNext) this.steps[this.stepIndex].onNext();
+    }
+
+    onPrevious(){
+        if (this.isPaused) return;
+        //execute onBack function()
+        if (this.steps[this.stepIndex] && this.steps[this.stepIndex].onPrevious) this.steps[this.stepIndex].onPrevious();
+    }
+
+    /**go to next step */
+    next() {
+        if (this.isPaused) return;
+
+        this.stepIndex++;
+        this.clear();
+
+        if (this.steps.length === 0) return false;
+
+        if (this.stepIndex >= this.steps.length) {
+            this.stop();
+            return;
         }
 
-        //show loader progress
-        showLoader() {
-            const popover = this.document.querySelector('.wt-popover');
-            const loader = this.document.createElement('div');
-            loader.classList.add('wt-loader');
-            loader.style.zIndex = this.options.zIndex + 10;
-            popover.prepend(loader);
+        this.render(this.steps[this.stepIndex]);
+    }
+
+    previous() {
+        if (this.isPaused) return;
+
+        this.stepIndex--;
+        this.clear();
+
+        if (this.steps.length === 0) return false;
+
+        if (this.stepIndex < 0) {
+            this.stop();
+            return;
         }
 
-        moveNext() {
-            this.isPaused = false;
-            this.next();
-        }
+        this.render(this.steps[this.stepIndex]);
+    }
 
-        movePrevious() {
-            this.isPaused = false;
-            this.previous();
-        }
+    //add the popover to document
+    render(step) {
+        var element = step.element ? this.document.querySelector(step.element) : null;
 
-        onNext(){
-            //execute onNext function()
-            if (this.steps[this.stepIndex] && this.steps[this.stepIndex].onNext) this.steps[this.stepIndex].onNext();
-        }
-
-        onPrevious(){
-            //execute onBack function()
-            if (this.steps[this.stepIndex] && this.steps[this.stepIndex].onPrevious) this.steps[this.stepIndex].onPrevious();
-        }
-
-        /**go to next step */
-        next() {
-            if (this.isPaused) {
-                return;
+        //check if element is present if not make it floating
+        if (element) {
+            element.style.position = !element.style.position ? 'relative' : element.style.position;
+            const step_highlight = !step.highlight ? true : step.highlight;                
+            //highlight is set to true
+            if (this.options.highlight && step_highlight ) {
+                element.setAttribute('wt-highlight', 'true');
             }
-
-            this.stepIndex++;
-            this.clear();
-
-            if (this.steps.length === 0) return false;
-
-            if (this.stepIndex >= this.steps.length) {
-                this.stop();
-                return;
-            }
-
-            this.render(this.steps[this.stepIndex]);
         }
 
-        previous() {
-            if (this.isPaused) {
-                return;
+        //popover
+        const popover = this.document.createElement('div');
+        const popoverInner = this.document.createElement('div');
+        const arrow = this.document.createElement('div');
+        const title = this.document.createElement('div');
+        const content = this.document.createElement('div');
+        const btnNext = this.document.createElement('button');
+        const btnBack = this.document.createElement('button');
+
+        popover.classList.add('wt-popover');
+        popover.style.borderRadius = this.options.borderRadius + 'px';
+        popover.style.zIndex = this.options.zIndex + 10;
+
+        if (this.options.width) {
+            if (typeof this.options.width === 'string') {
+                popover.style.width = this.options.width;
+            } else if (this.options.width > 0) {
+                popover.style.width = this.options.width + 'px';
             }
-
-            this.stepIndex--;
-            this.clear();
-
-            if (this.steps.length === 0) return false;
-
-            if (this.stepIndex < 0) {
-                this.stop();
-                return;
-            }
-
-            this.render(this.steps[this.stepIndex]);
         }
 
-        //add the popover to document
-        render(step) {
-            var element = step.element ? this.document.querySelector(step.element) : null;
-
-            //check if element is present if not make it floating
-            if (element) {
-                element.style.position = !element.style.position ? 'relative' : element.style.position;
-                const step_highlight = !step.highlight ? true : step.highlight;                
-                //highlight is set to true
-                if (this.options.highlight && step_highlight ) {
-                    element.setAttribute('wt-highlight', 'true');
-                }
+        if (step.width) {
+            if (typeof step.width === 'string') {
+                popover.style.width = step.width;
+            } else if (step.width > 0) {
+                popover.style.width = step.width + 'px';
             }
+        }
 
-            //popover
-            const popover = this.document.createElement('div');
-            const popoverInner = this.document.createElement('div');
-            const arrow = this.document.createElement('div');
-            const title = this.document.createElement('div');
-            const content = this.document.createElement('div');
-            const btnNext = this.document.createElement('button');
-            const btnBack = this.document.createElement('button');
+        popoverInner.classList.add('wt-popover-inner');
+        arrow.classList.add('wt-arrow');
+        arrow.setAttribute('data-popper-arrow', 'true');
+        title.classList.add('wt-title');
+        content.classList.add('wt-content');
+        btnNext.classList.add('wt-btns', 'wt-btn-next');
+        btnBack.classList.add('wt-btns', 'wt-btn-back');
+        if (step.placement) popover.classList.add(step.placement); //add user define placement to class for position in css
 
-            popover.classList.add('wt-popover');
-            popover.style.borderRadius = this.options.borderRadius + 'px';
-            popover.style.zIndex = this.options.zIndex + 10;
+        //add text
+        if (step.title) title.innerText = step.title;
+        content.innerHTML = (step.content ? step.content : '');
+        btnNext.innerHTML = (step.btnNext && step.btnNext.text ? step.btnNext.text : (this.stepIndex == this.steps.length - 1 ? 'Done' : 'Next &#8594;'));
+        btnBack.innerHTML = (step.btnBack && step.btnBack.text ? step.btnBack.text : (this.stepIndex == 0 ? 'Close' : '	&#8592; Back'));
 
-            if (this.options.width) {
-                if (typeof this.options.width === 'string') {
-                    popover.style.width = this.options.width;
-                } else if (this.options.width > 0) {
-                    popover.style.width = this.options.width + 'px';
-                }
-            }
+        //add styles
+        btnNext.style.backgroundColor = (step.btnNext && step.btnNext.backgroundColor ? step.btnNext.backgroundColor : '#7cd1f9');
+        btnBack.style.backgroundColor = (step.btnBack && step.btnBack.backgroundColor ? step.btnBack.backgroundColor : '#efefef;');
+        btnNext.style.color = (step.btnNext && step.btnNext.textColor ? step.btnNext.textColor : '#fff');
+        btnBack.style.color = (step.btnBack && step.btnBack.textColor ? step.btnBack.textColor : '#555');
 
-            if (step.width) {
-                if (typeof step.width === 'string') {
-                    popover.style.width = step.width;
-                } else if (step.width > 0) {
-                    popover.style.width = step.width + 'px';
-                }
-            }
+        ///combine popover component
+        if (step.title) popoverInner.append(title);
+        popoverInner.append(content);
+        popoverInner.append(btnNext);
+        popoverInner.append(btnBack);
+        popover.append(arrow);
+        popover.append(popoverInner);
 
-            popoverInner.classList.add('wt-popover-inner');
-            arrow.classList.add('wt-arrow');
-            arrow.setAttribute('data-popper-arrow', 'true');
-            title.classList.add('wt-title');
-            content.classList.add('wt-content');
-            btnNext.classList.add('wt-btns', 'wt-btn-next');
-            btnBack.classList.add('wt-btns', 'wt-btn-back');
-            if (step.placement) popover.classList.add(step.placement); //add user define placement to class for position in css
+        this.document.body.appendChild(popover);
 
-            //add text
-            if (step.title) title.innerText = step.title;
-            content.innerHTML = (step.content ? step.content : '');
-            btnNext.innerHTML = (step.btnNext && step.btnNext.text ? step.btnNext.text : (this.stepIndex == this.steps.length - 1 ? 'Done' : 'Next &#8594;'));
-            btnBack.innerHTML = (step.btnBack && step.btnBack.text ? step.btnBack.text : (this.stepIndex == 0 ? 'Close' : '	&#8592; Back'));
-
-            //add styles
-            btnNext.style.backgroundColor = (step.btnNext && step.btnNext.backgroundColor ? step.btnNext.backgroundColor : '#7cd1f9');
-            btnBack.style.backgroundColor = (step.btnBack && step.btnBack.backgroundColor ? step.btnBack.backgroundColor : '#efefef;');
-            btnNext.style.color = (step.btnNext && step.btnNext.textColor ? step.btnNext.textColor : '#fff');
-            btnBack.style.color = (step.btnBack && step.btnBack.textColor ? step.btnBack.textColor : '#555');
-
-            ///combine popover component
-            if (step.title) popoverInner.append(title);
-            popoverInner.append(content);
-            popoverInner.append(btnNext);
-            popoverInner.append(btnBack);
-            popover.append(arrow);
-            popover.append(popoverInner);
-
+        if (element) {
+            this.positionPopover(element, popover, arrow, step);
             if (this.options.highlight){
-                var overlay1 = document.createElement('div');
-                overlay1.classList.add('wt-overlay', 'open', 'overlay1');
-                overlay1.style.zIndex = this.options.zIndex - 10;
-    
-                var overlay2 = document.createElement('div');
-                overlay2.classList.add('wt-overlay', 'open', 'overlay2');
-                overlay2.style.zIndex = this.options.zIndex - 10;
-    
-                var overlay3 = document.createElement('div');
-                overlay3.classList.add('wt-overlay', 'open', 'overlay3');
-                overlay3.style.zIndex = this.options.zIndex - 10;
-    
-                var overlay4 = document.createElement('div');
-                overlay4.classList.add('wt-overlay', 'open', 'overlay4');
-                overlay4.style.zIndex = this.options.zIndex - 10;
-            
-                //append to body
-                //TODO: add hole in overlay similar to pagetour
-                this.document.body.appendChild(overlay1);
-                this.document.body.appendChild(overlay2);
-                this.document.body.appendChild(overlay3);
-                this.document.body.appendChild(overlay4);
-            }       
-
-            this.document.body.appendChild(popover);
-
-            if (!this.Popper && element) {
-                this.positionPopover(element, popover, arrow, step);
-                if (this.options.highlight){
-                    this.positionOverlay(element, overlay1, overlay2, overlay3, overlay4);
-                }            
-            }
-                /**
-                * No element is define
-                * Make popover floating (position center)
-                */
-            else if (!element){                
-                popover.classList.add('wt-slides');
-                popover.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
-
-                if (this.options.highlight){
-                    var overlay = document.createElement('div');
-                    overlay.classList.add('wt-overlay', 'open');
-                    overlay.style.zIndex = this.options.zIndex - 10;
-                    overlay.style.position = 'fixed';
-                    overlay.style.top = 0;
-                    overlay.style.left = 0;
-                    overlay.style.right = 0;
-                    overlay.style.bottom = 0;
-                    this.document.body.appendChild(overlay);
-                }                
-
-                arrow.remove();
-            }
-
-            //add option to remove arrow because popper arrows are not positioning well
-            //TODO: fix popper arrow
-            if (this.options.removeArrow){
-                arrow.remove();
-            }
-
-        }
-
-        //remove popover
-        clear() {
-            var popup = this.document.querySelector('.wt-popover');
-            var loader = this.document.querySelector('.wt-loader');
-
-            if (popup) popup.remove();
-            if (loader) loader.remove();
-
-            this.document.querySelectorAll('.wt-overlay').forEach((element) => {
-                element.remove();
-            })
-
-            this.document.querySelectorAll('*[wt-highlight]').forEach((element) => {
-                element.removeAttribute('wt-highlight');
-            })
-        }
-
-        getWindowOffset(){
-            return {
-                height: this.window.innerHeight - (this.window.innerHeight - this.document.documentElement.clientHeight),
-                width: this.window.innerWidth - (this.window.innerWidth - this.document.documentElement.clientWidth),
-            }
-        }
-
-        getOffset( el ) {
-            var _x = 0;
-            var _y = 0;
-            while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) ) {
-                _x += el.offsetLeft - el.scrollLeft;
-                _y += el.offsetTop - el.scrollTop;
-                el = el.offsetParent;
-            }
-            return { top: _y, left: _x };
-        }
-
-        //get css transform property to fixed issues with transform elements
-        getTranslateXY(element) {
-            const style = window.getComputedStyle(element)
-            const matrix = new DOMMatrixReadOnly(style.transform)
-
-            return {
-                translateX:  Math.abs(element.offsetWidth * (matrix.m41 / 100)),
-                translateY:  Math.abs(element.offsetHeight * (matrix.m42 / 100))
-            }
-        }
-
-        getElementPosition(element){
-            return {
-                top: this.getOffset(element).top - (element.style.transform ? this.getTranslateXY(element).translateY : 0),
-                left: this.getOffset(element).left -( element.style.transform ? this.getTranslateXY(element).translateX : 0)
-            }
-        }
-
-        //position popover
-        positionPopover(element, popover, arrow, step) {
-            var placement = step.placement ? step.placement : 'auto';
-            var strategy = step.strategy ? step.strategy : 'absolute';
-
-            popover.style.position = strategy;
-            arrow.style.position = 'absolute';
-
-            //element top & left
-            var el_top, el_left;
-            el_top = this.getElementPosition(element).top; 
-            el_left = this.getElementPosition(element).left; 
-      
-            //if placement is not defined or auto then calculate location
-            if (placement == 'auto' || placement == 'auto-start' || placement == 'auto-end') {
-                const arrow = placement.replace('auto', '').trim();
-                var new_arrow = '';
-
-                //element is position to the bottom of the screen
-                //position popover to top
-                if (el_top + (popover.offsetHeight + this.options.offset) > this.window.innerHeight - 100) {
-                    //divide the screen into 3 sections
-                    //if left is within section 1/3 of the screen then arrow is in the start position
-                    if (el_left < (this.window.innerWidth / 3)) {
-                        new_arrow = arrow.length > 0 ? arrow : '-start';
-                    }
-                        //if left is within that section 3/3 of the screen then arrow is in the end position
-                    else if (el_left > (this.window.innerWidth - (this.window.innerWidth / 3))) {
-                        new_arrow = arrow.length > 0 ? arrow : '-end';
-                    }
-                    placement = 'top' + new_arrow;
-                }
-
-                //element is position to the right side of the screen
-                //position popover to the left
-                if ((el_left + element.offsetWidth + popover.offsetWidth) > this.window.innerWidth) {
-                    //divide the screen into 3 sections
-                    //if left is within section 1/3 of the screen then arrow is in the start position
-                    if (el_top < (this.window.innerHeight / 3)) {
-                        new_arrow = arrow.length > 0 ? arrow : '-start';
-                    }
-                        //if left is within that section 3/3 of the screen then arrow is in the end position
-                    else if (el_top > (this.window.innerHeight - (this.window.innerHeight / 3))) {
-                        new_arrow = arrow.length > 0 ? arrow : '-start';
-                    }
-                    placement = 'left' + new_arrow;
-                }
-
-                //element is position to the left side of the screen
-                //position popover to the right
-                if (el_left < popover.offsetWidth && (element.offsetWidth + popover.offsetWidth) < this.window.innerWidth) {
-                    //divide the screen into 3 sections
-                    //if left is within section 1/3 of the screen then arrow is in the start position
-                    if (el_top < (this.window.innerHeight / 3)) {
-                        new_arrow = arrow.length > 0 ? arrow : '-start';
-                    }
-                        //if left is within that section 3/3 of the screen then arrow is in the end position
-                    else if (el_top > (this.window.innerHeight - (this.window.innerHeight / 3))) {
-                        new_arrow = arrow.length > 0 ? arrow : '-start';
-                    }
-                    placement = 'right' + new_arrow;
-                }
-
-                //element is position to the top of the screen
-                //position popover to bottom
-                if (el_top < (popover.offsetHeight + this.options.offset) || el_top < 100) {
-                    //divide the screen into 3 sections
-                    //if left is within section 1/3 of the screen then arrow is in the start position
-                    if (el_left < (this.window.innerWidth / 3)) {
-                        new_arrow = arrow.length > 0 ? arrow : '-start';
-                    }
-                        //if left is within that section 3/3 of the screen then arrow is in the end position
-                    else if (el_left > (this.window.innerWidth - (this.window.innerWidth / 3))) {
-                        new_arrow = arrow.length > 0 ? arrow : '-end';
-                    }
-                    placement = 'bottom' + new_arrow;
-                }
-
-                //add to class for css
-                popover.classList.add(placement);
-            }
-
-            //top
-            if (placement == 'top') {
-                popover.style.top = (el_top - (popover.offsetHeight + this.options.offset)) + 'px';
-                popover.style.left = (el_left + ((element.offsetWidth / 2) - (popover.offsetWidth / 2))) + 'px';
-            } else if (placement == 'top-start') {
-                popover.style.top = (el_top - (popover.offsetHeight + this.options.offset)) + 'px';
-                popover.style.left = el_left - this.options.highlightOffset + 'px';
-            } else if (placement == 'top-end') {
-                popover.style.top = (el_top - (popover.offsetHeight + this.options.offset)) + 'px';
-                popover.style.left = ((el_left + element.offsetWidth + this.options.highlightOffset) - popover.offsetWidth) + 'px';
-            }
-
-                //bottom
-            else if (placement == 'bottom') {
-                popover.style.top = (el_top + element.offsetHeight) + this.options.offset + 'px';
-                popover.style.left = (el_left + (element.offsetWidth / 2) - popover.offsetWidth / 2) + 'px';
-            } else if (placement == 'bottom-start') {
-                popover.style.top = (el_top + element.offsetHeight) + this.options.offset + 'px';
-                popover.style.left = (el_left - this.options.highlightOffset) + 'px';
-            } else if (placement == 'bottom-end') {
-                popover.style.top = (el_top + element.offsetHeight) + this.options.offset + 'px';
-                popover.style.left = ((el_left + element.offsetWidth + this.options.highlightOffset) - popover.offsetWidth) + 'px';
-            }
-
-                //left
-            else if (placement == 'right') {
-                popover.style.top = (el_top + (popover.offsetHeight / 2) - ((element.offsetHeight + this.options.highlightOffset) / 2)) + 'px';
-                popover.style.left = (el_left + (element.offsetWidth + this.options.offset)) + 'px';
-            } else if (placement == 'right-start') {
-                popover.style.top = el_top - this.options.highlightOffset + 'px';
-                popover.style.left = (el_left + (element.offsetWidth + this.options.offset)) + 'px';
-            } else if (placement == 'right-end') {
-                popover.style.top = ((el_top + element.offsetHeight) - popover.offsetHeight) + this.options.highlightOffset + 'px';
-                popover.style.left = (el_left + (element.offsetWidth + this.options.offset)) + 'px';
-            }
-
-                //right
-            else if (placement == 'left') {
-                popover.style.top = (el_top + (popover.offsetHeight / 2) - ((element.offsetHeight + this.options.highlightOffset) / 2)) + 'px';
-                popover.style.left = (el_left - (popover.offsetWidth + this.options.offset)) + 'px';
-            } else if (placement == 'left-start') {
-                popover.style.top = el_top - this.options.highlightOffset + 'px';
-                popover.style.left = (el_left - (popover.offsetWidth + this.options.offset)) + 'px';
-            } else if (placement == 'left-end') {
-                popover.style.top = ((el_top + element.offsetHeight) - popover.offsetHeight) + this.options.highlightOffset + 'px';
-                popover.style.left = (el_left - (popover.offsetWidth + this.options.offset)) + 'px';
-            }
-
-            //if position is fixed scroll to top
-            if (strategy === 'fixed'){
-                this.window.scrollTo(0, 0);
-            }else{
-                popover.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
+                this.createOverlay(element);
             }            
         }
+        /**
+        * No element is define
+        * Make popover floating (position center)
+        */
+        else {                
+            popover.classList.add('wt-slides');
+            popover.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
 
-        positionOverlay(element, overlay1, overlay2, overlay3, overlay4){
-            
-            //element top & left
-            var el_top, el_left;
-            el_top = this.getElementPosition(element).top; 
-            el_left = this.getElementPosition(element).left;
-            
-            var highlight_offset = this.options.highlightOffset;
+            if (this.options.highlight){
+                var overlay = document.createElement('div');
+                overlay.classList.add('wt-overlay', 'open');
+                overlay.style.zIndex = this.options.zIndex - 10;
+                overlay.style.position = 'fixed';
+                overlay.style.top = 0;
+                overlay.style.left = 0;
+                overlay.style.right = 0;
+                overlay.style.bottom = 0;
+                this.document.body.appendChild(overlay);
+            }                
 
-            //overlays top-left
-            overlay1.style.position = 'absolute';
-            overlay1.style.top = 0;
-            overlay1.style.width =  el_left - highlight_offset + 'px';
-            overlay1.style.height =  (el_top + element.offsetHeight + highlight_offset) + 'px';
-            overlay1.style.left = 0;
+            arrow.remove();
+        }
 
-            //overlays top-right
-            overlay2.style.position = 'absolute';
-            overlay2.style.top = 0;
-            overlay2.style.right = 0;
-            overlay2.style.height = (el_top - highlight_offset) + 'px';
-            overlay2.style.left = (el_left - highlight_offset) + 'px';
-
-            //overlays bottom-right
-            overlay3.style.position = 'absolute';
-            overlay3.style.top = (el_top - highlight_offset) + 'px';
-            overlay3.style.right = 0;
-            overlay3.style.bottom = 0;
-            overlay3.style.left = (el_left + element.offsetWidth + highlight_offset) + 'px';
-
-            //overlays bottom-left
-            overlay4.style.position = 'absolute';
-            overlay4.style.top = (el_top + element.offsetHeight + highlight_offset) + 'px';
-            overlay4.style.width =   el_left + element.offsetWidth + highlight_offset  + 'px';
-            overlay4.style.bottom = 0;
-            overlay4.style.left = 0;
+        //add option to remove arrow because popper arrows are not positioning well
+        //TODO: fix popper arrow
+        if (this.options.removeArrow){
+            arrow.remove();
         }
 
     }
+
+    //remove popover
+    clear() {
+        var popup = this.document.querySelector('.wt-popover');
+        var loader = this.document.querySelector('.wt-loader');
+
+        if (popup) popup.remove();
+        if (loader) loader.remove();
+
+        this.document.querySelectorAll('.wt-overlay').forEach((element) => {
+            element.remove();
+        })
+
+        this.document.querySelectorAll('*[wt-highlight]').forEach((element) => {
+            element.removeAttribute('wt-highlight');
+        })
+    }
+
+    getWindowOffset(){
+        return {
+            height: this.window.innerHeight - (this.window.innerHeight - this.document.documentElement.clientHeight),
+            width: this.window.innerWidth - (this.window.innerWidth - this.document.documentElement.clientWidth),
+        }
+    }
+
+    getOffset( el ) {
+        var _x = 0;
+        var _y = 0;
+        while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) ) {
+            _x += el.offsetLeft - el.scrollLeft;
+            _y += el.offsetTop - el.scrollTop;
+            el = el.offsetParent;
+        }
+        return { top: _y, left: _x };
+    }
+
+    //get css transform property to fixed issues with transform elements
+    getTranslateXY(element) {
+        const style = window.getComputedStyle(element)
+        const matrix = new DOMMatrixReadOnly(style.transform)
+
+        return {
+            translateX:  Math.abs(element.offsetWidth * (matrix.m41 / 100)),
+            translateY:  Math.abs(element.offsetHeight * (matrix.m42 / 100))
+        }
+    }
+
+    getElementPosition(element){
+        return {
+            top: this.getOffset(element).top - (element.style.transform ? this.getTranslateXY(element).translateY : 0),
+            left: this.getOffset(element).left -( element.style.transform ? this.getTranslateXY(element).translateX : 0)
+        }
+    }
+
+    //position popover
+    positionPopover(element, popover, arrow, step) {
+        var placement = step.placement ? step.placement : 'auto';
+        var strategy = step.strategy ? step.strategy : 'absolute';
+
+        popover.style.position = strategy;
+        arrow.style.position = 'absolute';
+
+        //element top & left
+        var el_top, el_left;
+        el_top = this.getElementPosition(element).top; 
+        el_left = this.getElementPosition(element).left; 
+    
+        //if placement is not defined or auto then calculate location
+        if (placement == 'auto' || placement == 'auto-start' || placement == 'auto-end') {
+            const arrow = placement.replace('auto', '').trim();
+            var new_arrow = '';
+
+            //element is position to the bottom of the screen
+            //position popover to top
+            if (el_top + (popover.offsetHeight + this.options.offset) > this.window.innerHeight - 100) {
+                //divide the screen into 3 sections
+                //if left is within section 1/3 of the screen then arrow is in the start position
+                if (el_left < (this.window.innerWidth / 3)) {
+                    new_arrow = arrow.length > 0 ? arrow : '-start';
+                }
+                    //if left is within that section 3/3 of the screen then arrow is in the end position
+                else if (el_left > (this.window.innerWidth - (this.window.innerWidth / 3))) {
+                    new_arrow = arrow.length > 0 ? arrow : '-end';
+                }
+                placement = 'top' + new_arrow;
+            }
+
+            //element is position to the right side of the screen
+            //position popover to the left
+            if ((el_left + element.offsetWidth + popover.offsetWidth) > this.window.innerWidth) {
+                //divide the screen into 3 sections
+                //if left is within section 1/3 of the screen then arrow is in the start position
+                if (el_top < (this.window.innerHeight / 3)) {
+                    new_arrow = arrow.length > 0 ? arrow : '-start';
+                }
+                    //if left is within that section 3/3 of the screen then arrow is in the end position
+                else if (el_top > (this.window.innerHeight - (this.window.innerHeight / 3))) {
+                    new_arrow = arrow.length > 0 ? arrow : '-start';
+                }
+                placement = 'left' + new_arrow;
+            }
+
+            //element is position to the left side of the screen
+            //position popover to the right
+            if (el_left < popover.offsetWidth && (element.offsetWidth + popover.offsetWidth) < this.window.innerWidth) {
+                //divide the screen into 3 sections
+                //if left is within section 1/3 of the screen then arrow is in the start position
+                if (el_top < (this.window.innerHeight / 3)) {
+                    new_arrow = arrow.length > 0 ? arrow : '-start';
+                }
+                    //if left is within that section 3/3 of the screen then arrow is in the end position
+                else if (el_top > (this.window.innerHeight - (this.window.innerHeight / 3))) {
+                    new_arrow = arrow.length > 0 ? arrow : '-start';
+                }
+                placement = 'right' + new_arrow;
+            }
+
+            //element is position to the top of the screen
+            //position popover to bottom
+            if (el_top < (popover.offsetHeight + this.options.offset) || el_top < 100) {
+                //divide the screen into 3 sections
+                //if left is within section 1/3 of the screen then arrow is in the start position
+                if (el_left < (this.window.innerWidth / 3)) {
+                    new_arrow = arrow.length > 0 ? arrow : '-start';
+                }
+                    //if left is within that section 3/3 of the screen then arrow is in the end position
+                else if (el_left > (this.window.innerWidth - (this.window.innerWidth / 3))) {
+                    new_arrow = arrow.length > 0 ? arrow : '-end';
+                }
+                placement = 'bottom' + new_arrow;
+            }
+
+            //add to class for css
+            popover.classList.add(placement);
+        }
+
+        //top
+        if (placement == 'top') {
+            popover.style.top = (el_top - (popover.offsetHeight + this.options.offset)) + 'px';
+            popover.style.left = (el_left + ((element.offsetWidth / 2) - (popover.offsetWidth / 2))) + 'px';
+        } else if (placement == 'top-start') {
+            popover.style.top = (el_top - (popover.offsetHeight + this.options.offset)) + 'px';
+            popover.style.left = el_left - this.options.highlightOffset + 'px';
+        } else if (placement == 'top-end') {
+            popover.style.top = (el_top - (popover.offsetHeight + this.options.offset)) + 'px';
+            popover.style.left = ((el_left + element.offsetWidth + this.options.highlightOffset) - popover.offsetWidth) + 'px';
+        }
+
+            //bottom
+        else if (placement == 'bottom') {
+            popover.style.top = (el_top + element.offsetHeight) + this.options.offset + 'px';
+            popover.style.left = (el_left + (element.offsetWidth / 2) - popover.offsetWidth / 2) + 'px';
+        } else if (placement == 'bottom-start') {
+            popover.style.top = (el_top + element.offsetHeight) + this.options.offset + 'px';
+            popover.style.left = (el_left - this.options.highlightOffset) + 'px';
+        } else if (placement == 'bottom-end') {
+            popover.style.top = (el_top + element.offsetHeight) + this.options.offset + 'px';
+            popover.style.left = ((el_left + element.offsetWidth + this.options.highlightOffset) - popover.offsetWidth) + 'px';
+        }
+
+            //left
+        else if (placement == 'right') {
+            popover.style.top = (el_top + (popover.offsetHeight / 2) - ((element.offsetHeight + this.options.highlightOffset) / 2)) + 'px';
+            popover.style.left = (el_left + (element.offsetWidth + this.options.offset)) + 'px';
+        } else if (placement == 'right-start') {
+            popover.style.top = el_top - this.options.highlightOffset + 'px';
+            popover.style.left = (el_left + (element.offsetWidth + this.options.offset)) + 'px';
+        } else if (placement == 'right-end') {
+            popover.style.top = ((el_top + element.offsetHeight) - popover.offsetHeight) + this.options.highlightOffset + 'px';
+            popover.style.left = (el_left + (element.offsetWidth + this.options.offset)) + 'px';
+        }
+
+            //right
+        else if (placement == 'left') {
+            popover.style.top = (el_top + (popover.offsetHeight / 2) - ((element.offsetHeight + this.options.highlightOffset) / 2)) + 'px';
+            popover.style.left = (el_left - (popover.offsetWidth + this.options.offset)) + 'px';
+        } else if (placement == 'left-start') {
+            popover.style.top = el_top - this.options.highlightOffset + 'px';
+            popover.style.left = (el_left - (popover.offsetWidth + this.options.offset)) + 'px';
+        } else if (placement == 'left-end') {
+            popover.style.top = ((el_top + element.offsetHeight) - popover.offsetHeight) + this.options.highlightOffset + 'px';
+            popover.style.left = (el_left - (popover.offsetWidth + this.options.offset)) + 'px';
+        }
+
+        //if position is fixed scroll to top
+        if (strategy === 'fixed'){
+            this.window.scrollTo(0, 0);
+        }else{
+            popover.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
+        }            
+    }
+
+    createOverlay(element){
+        var overlay1 = document.createElement('div');
+        overlay1.classList.add('wt-overlay', 'open', 'overlay1');
+        overlay1.style.zIndex = this.options.zIndex - 10;
+
+        var overlay2 = document.createElement('div');
+        overlay2.classList.add('wt-overlay', 'open', 'overlay2');
+        overlay2.style.zIndex = this.options.zIndex - 10;
+
+        var overlay3 = document.createElement('div');
+        overlay3.classList.add('wt-overlay', 'open', 'overlay3');
+        overlay3.style.zIndex = this.options.zIndex - 10;
+
+        var overlay4 = document.createElement('div');
+        overlay4.classList.add('wt-overlay', 'open', 'overlay4');
+        overlay4.style.zIndex = this.options.zIndex - 10;
+    
+        //append to body
+        this.document.body.appendChild(overlay1);
+        this.document.body.appendChild(overlay2);
+        this.document.body.appendChild(overlay3);
+        this.document.body.appendChild(overlay4);
+
+        //element top & left
+        var el_top, el_left;
+        el_top = this.getElementPosition(element).top; 
+        el_left = this.getElementPosition(element).left;
+        
+        var highlight_offset = this.options.highlightOffset;
+
+        //overlays top-left
+        overlay1.style.position = 'absolute';
+        overlay1.style.top = 0;
+        overlay1.style.width =  el_left - highlight_offset + 'px';
+        overlay1.style.height =  (el_top + element.offsetHeight + highlight_offset) + 'px';
+        overlay1.style.left = 0;
+
+        //overlays top-right
+        overlay2.style.position = 'absolute';
+        overlay2.style.top = 0;
+        overlay2.style.right = 0;
+        overlay2.style.height = (el_top - highlight_offset) + 'px';
+        overlay2.style.left = (el_left - highlight_offset) + 'px';
+
+        //overlays bottom-right
+        overlay3.style.position = 'absolute';
+        overlay3.style.top = (el_top - highlight_offset) + 'px';
+        overlay3.style.right = 0;
+        overlay3.style.bottom = 0;
+        overlay3.style.left = (el_left + element.offsetWidth + highlight_offset) + 'px';
+
+        //overlays bottom-left
+        overlay4.style.position = 'absolute';
+        overlay4.style.top = (el_top + element.offsetHeight + highlight_offset) + 'px';
+        overlay4.style.width =   el_left + element.offsetWidth + highlight_offset  + 'px';
+        overlay4.style.bottom = 0;
+        overlay4.style.left = 0;
+    }
+
+}
