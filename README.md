@@ -4,12 +4,12 @@ A light-weight user's step-by-step guide for your website using Vanilla JS.
 
 > ## Features
 >
-> - **User's walkthrough** can be used to guide user's to your website using modals and popovers.
-> - **Slideshow** webtour can be used as slideshow within your website.
-> - **Highlight element** can highlight specific element on the page without modifying the element position and style.
-> - **Dynamic element** can target dynamically created element.
-> - **Auto scroll** scroll automatically to popover's position.
-> - **Keyboard control** allows control using next, back and esc keys.
+> - **User's walkthrough** - can be used to guide user's to your website using modals and popovers.
+> - **Slideshow** - webtour can be used as slideshow within your website.
+> - **Highlight element** - can highlight specific element on the page without modifying the element position and style.
+> - **Dynamic element** - can target dynamically created element.
+> - **Auto scroll** - scroll automatically to popover's position.
+> - **Keyboard control** - allows control using next, back and esc keys.
 > - **Update position on resize**
 
 ## How does WebTour highlight works?
