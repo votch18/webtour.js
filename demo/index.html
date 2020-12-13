@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="User's walkthrough, popover, highlight, dynamic element targetting step-by-step guide">
+    <meta name="author" content="Julious Mark de leon">
+    <title>WebTour JS</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&family=Roboto&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+        
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" integrity="sha512-PgQMlq+nqFLV4ylk1gwUOgm6CtIIXkKwaIHp/PAIWHzig/lKZSEGKEysh0TCVbHJXCLN7WetD8TFecIky75ZfQ==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.1/styles/default.min.css" integrity="sha512-kZqGbhf9JTB4bVJ0G8HCkqmaPcRgo88F0dneK30yku5Y/dep7CZfCnNml2Je/sY4lBoqoksXz4PtVXS4GHSUzQ==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.1/styles/darcula.min.css" integrity="sha512-0+Gq7jQLhuoMdL8EednGo8delKMhKim1t3XrvVGTqbJPfyv5f4HUJ0DTEN+3E+aM4RGEEfmVJOiomnP9olm4iw==" crossorigin="anonymous" />
+    <link href="../dist/webtour.min.css" rel="stylesheet">
+
+<style>
+    body {
+        overflow-x: hidden;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Open Sans' sans-serif;        
+        font-weight: bolder;
+    }
+
+    p, li, a {
+        font-family: 'Roboto', sans-serif;
+        font-size: 16px;
+        letter-spacing: .8px;
+    }
+
+    pre, code {
+        font-size: 16px;
+    }
+
+    .navbar-brand {
+        font-family: 'Open Sans', sans-serif;
+        font-weight: bolder;
+        font-size: 28px;
+    }
+
+	.navbar {
+		padding: 1.5rem 3rem;
+		height: 100px;	
+	}
+	.navbar > div > a, a > i {
+		color: #495057;
+	}
+	
+	main {
+		background: #F1F3F5;
+	}
+
+    .wt-primary {
+        background-color: #7cd1f9;
+        color: #fff;
+    }
+
+    .wt-primary:hover {
+        background-color: #56C4F8;
+        color: #fff;
+    }
+</style>
+  </head>
+  <body>
+    
+<header> 
+  <div class="navbar navbar-white bg-white shadow-sm">
+    <div class="container-fluid container-lg">
+      <a href="#" class="navbar-brand d-flex align-items-center">
+          <img src="assets/webtour.svg" style="margin-right: 10px;">
+        <b>WEBTOUR JS</b>
+      </a>
+	  <div>
+		  <a href="#"><i class="fab fa-github fa-2x"></i></a>		
+	  </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="pt-5 text-center">
+    <div class="row">
+      <div class="col-lg-6 col-md-8 mx-auto">
+        <h1 class="fw-bold" id="title">A light-weight user's step-by-step guide for your website using Vanilla JS.</h1>
+        <p class="lead text-muted"></p>
+        <p>          
+          <a href="javascript:void(0)" class="btn wt-primary shadow-sm my-2 btn-lg mx-1" id="demo">Show demo</a>
+          <a href="javascript:void(0)" class="btn btn-light shadow-sm my-2 btn-lg mx-1">Get started &#8594;</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="py-5">
+    <div class="container">
+
+      <div class="row">
+        <div class="col-md-8 offset-md-2 pb-5">
+          <div class="card shadow-sm">           
+            <div class="card-body px-4 pb-5">
+                <div id="features" class="mb-5">
+                    <h2 class="my-3">Features</h2>
+                    <hr/>
+                    <ul>
+                        <li><b>Highlight element</b> - can highlight specific element on the page without modifying the element position and style.</li>
+                        <li><b>User's walkthrough</b> - can be used to guide user's to your website using modals and popovers.</li>
+                        <li><b>Slideshow</b> - can be used as slideshow within your website.</li>                       
+                        <li><b>Dynamic element targetting</b> - can target dynamically created element during tour.</li>
+                        <li><b>Auto scroll</b> - automatically scroll to popover's position.</li>
+                        <li><b>Keyboard control</b> - allows control using next, back and esc keys.</li>
+                        <li><b>Update position on resize.</b></li>
+                    </ul>
+                </div>
+                
+                <div id="highlight" class="mb-5">
+                    <h2>How does WebTour highlight works?</h2>
+                    <hr/>
+                    <p>WebTour highlight works by adding overlay to the page except for the highlighted element. It is basically an overlay with a hole showing the element that is highlighted. WebTour can highlight even on modals.</p>
+                </div>
+
+                <div id="installation" class="mb-5">
+                    <h2>Installation</h2>
+                    <hr/>
+                    <p>Include the files from /dist directory.</p>
+                    <pre><code class="html">&lt;link rel="stylesheet" href="/dist/webtour.min.css"1&gt;<br/>&lt;script src="/dist/webtour.min.js"1&gt;&lt;/script1&gt;</code></pre>
+                
+                </div>
+
+                <div id="usage" class="mb-5">
+                    <h2 class="mb-3">Basic usage</h2>
+                    <hr/>
+                    <h4 class="my-3">Highlight an element</h4>
+                    <pre><code class="javascript">const wt = new WebTour();<br/>wt.highlight('#target');</code></pre>                
+                </div>
+                <div id="step_by_step" class="mb-5">                   
+                    <h4 class="my-3">User's walkthrough</h4>
+                    <pre>
+<code class="javascript">const wt = new WebTour();
+const steps = [
+    {
+        element: '#step_1',            
+        title: 'Popover title',         
+        content: 'Popover content',    
+        placement: 'right-start',      
+    },
+    {
+        element: '#step_2',            
+        title: 'Popover title',         
+        content: 'Popover content',     
+        placement: 'right-start',       
+    },
+    {
+        element: '#step_3',            
+        title: 'Popover title',         
+        content: 'Popover content',     
+        placement: 'right-start',       
+    },
+];
+
+wt.setSteps(steps);
+wt.start();</code>
+                    </pre>                
+                </div>
+            </div>
+          </div>
+        </div>
+       
+        <div class="col-md-8 offset-md-2">
+          <div class="card shadow-sm">
+            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+
+            <div class="card-body">
+              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                </div>
+                <small class="text-muted">9 mins</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-8 offset-md-2">
+          <div class="card shadow-sm">
+            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+
+            <div class="card-body">
+              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                </div>
+                <small class="text-muted">9 mins</small>
+              </div>
+            </div>
+          </div>
+        </div>
+       
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="text-muted py-5">
+  <div class="container">
+    <p class="float-end mb-1">
+      <a href="#">Back to top</a>
+    </p>
+    <p class="mb-1">Album example is &copy; Bootstrap, but please download and customize it for yourself!</p>
+    <p class="mb-0">New to Bootstrap? <a href="/">Visit the homepage</a> or read our <a href="../getting-started/introduction/">getting started guide</a>.</p>
+  </div>
+</footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/codemirror.min.js" integrity="sha512-zuvaVNiXwWY7U7HEdXsoTislTEElpKLELFoyQw0Bg7zfGhC4vG8eAhCxIQAvHmprW7dFhTq5zshUko4K3B4mSA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.1/highlight.min.js" integrity="sha512-DrpaExP2d7RJqNhXB41Q/zzzQrtb6J0zfnXD5XeVEWE8d9Hj54irCLj6dRS3eNepPja7DvKcV+9PnHC7A/g83A==" crossorigin="anonymous"></script>
+    <script src="../dist/webtour.min.js"></script>
+
+    <script>
+
+        window.onload = ()=> {
+
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+
+            var webTour = new WebTour({ allowClose: false });
+        var steps = [
+            {  
+                content: `<div style="text-align: center; padding: 30px;">                    
+                            <img src="assets/webtour.svg" >
+                            <h3 style="text-align: center;">Welcome to WebTour JS</h3>
+                        </div>`, 
+                width: '500px'
+            },
+            {
+                element: '#title',
+                title: 'Web Tour can highlight all visible and dynamically created elements.',
+                content: '(Works even on modals, just set the z-index higher to the modal you are targetting)',    
+                placement: 'bottom-start',
+            },
+            {
+                element: '#arrow-test',
+                title: 'top-end',
+                content: 'Test content',    
+                placement: 'top-end',
+            },
+            {
+                element: '#arrow-test',
+                title: 'right',
+                content: 'Test content',    
+                placement: 'right',
+            },
+            {
+                element: '#arrow-test',
+                title: 'right-start',
+                content: 'Test content',    
+                placement: 'right-start',
+            },
+            {
+                element: '#arrow-test',
+                title: 'right-end',
+                content: 'Test content',    
+                placement: 'right-end',
+            },
+            {
+                element: '#arrow-test',
+                title: 'bottom',
+                content: 'Test content',    
+                placement: 'bottom',
+            },
+            {
+                element: '#arrow-test',
+                title: 'bottom-start',
+                content: 'Test content',    
+                placement: 'bottom-start',
+            },
+            {
+                element: '#arrow-test',
+                title: 'bottom-end',
+                content: 'Test content',    
+                placement: 'bottom-end',
+            },
+            {
+                element: '#arrow-test',
+                title: 'left',
+                content: 'Test content',    
+                placement: 'left',
+            },
+            {
+                element: '#arrow-test',
+                title: 'left-start',
+                content: 'Test content',    
+                placement: 'left-start',
+            },
+            {
+                element: '#arrow-test',
+                title: 'left-end',
+                content: 'Test content',    
+                placement: 'left-end',
+            },
+            {
+                element: '#arrow-test',
+                title: 'left-end',
+                content: 'Test content',            
+                width: '30%',
+                placement: 'left-end',
+                onBack: () => {
+                    webTour.pause();
+                    webTour.showLoader();	
+                    setTimeout(function(){
+                        alert('tests');
+                        webTour.resumeBack();
+                    }, 500);
+                }
+            },
+            {
+                element: 'h1',
+                title: 'Tests Title 1',
+                content: 'Test content',
+                
+            },
+            {
+                element: 'p',
+                title: 'Tests Title 2',
+                content: 'Test content',
+                placement: 'auto-start',
+                btnNext: {
+                    text:'Sample',
+                    backgroundColor: '#ff0',
+                    textColor: '#555'
+                },
+                btnBack: {
+                    text:'Back boy',
+                    backgroundColor: '#ff0'
+                },
+                onNext: ()=>{
+                    webTour.isPaused = true;
+                    webTour.showLoader();	
+                    var isOK = setInterval(function(){
+                        clearInterval(isOK);
+                        var testid = document.createElement('button');
+                        testid.id += 'testid';
+                        testid.innerHTML = 'Tests Button';
+                        
+                        document.body.appendChild(testid);
+                        webTour.isPaused = false;
+                        webTour.moveNext();
+                    }, 100);
+                }			
+            },
+            {
+                element: '#testid',
+                title: 'Tests Title 2',
+                content: 'Test content',
+                onNext: ()=>{
+                    webTour.isPaused = true;
+                    webTour.showLoader();	
+                    var isOK = setInterval(function(){
+                        clearInterval(isOK);
+                        var testid = document.createElement('button');
+                        testid.id += 'testsid2';
+                        testid.innerHTML = 'Tests Button';
+                        
+                        document.body.appendChild(testid);
+                        webTour.isPaused = false;
+                        webTour.moveNext();
+                    }, 100);
+                }		
+            },
+            {
+                element: '#testsid2',
+                content: 'Test content',
+                width: 500,
+            },
+            {
+                content: '<div><img src="https://images.unsplash.com/photo-1606323593036-c082bb57561c" style="width: 100%; height: auto;"></div>',
+                width: 800,
+            },
+            ]
+            
+            //webTour.setSteps(steps);          
+            //webTour.start();
+    
+           //var wbTour = new WebTour();
+           //wbTour.render({
+            //   element: '#arrow-test',
+            //   placement: 'top'        
+           //});
+            //wbTour.highlight('#arrow-test');
+
+            document.getElementById("demo").addEventListener("click", function() {
+                webTour.setSteps(steps);          
+                webTour.start();    
+            });
+    
+        }
+
+        
+                
+    </script>
+      
+  </body>
+</html>

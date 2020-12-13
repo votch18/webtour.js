@@ -8,6 +8,7 @@
     background: #000;
     opacity: .5;
     transition: all 1s ease;
+    overflow: hidden;
 }
 
 .wt-popover {

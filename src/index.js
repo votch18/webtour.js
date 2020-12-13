@@ -543,14 +543,14 @@ export default class WebTour {
         overlay3.style.position = 'absolute';
         overlay3.style.top = (el_top - highlight_offset) + 'px';
         overlay3.style.right = 0;
-        overlay3.style.bottom = 0;
+        overlay3.style.bottom = 0 - (this.document.body.offsetHeight - this.window.innerHeight) + 'px';
         overlay3.style.left = (el_left + element.offsetWidth + highlight_offset) + 'px';
 
         //overlays bottom-left
         overlay4.style.position = 'absolute';
         overlay4.style.top = (el_top + element.offsetHeight + highlight_offset) + 'px';
         overlay4.style.width =   el_left + element.offsetWidth + highlight_offset  + 'px';
-        overlay4.style.bottom = 0;
+        overlay4.style.bottom = 0 - (this.document.body.offsetHeight - this.window.innerHeight) + 'px';
         overlay4.style.left = 0;
     }
 
