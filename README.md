@@ -24,7 +24,7 @@ Include the files from `dist` directory.
 <script src="/dist/webtour.min.js"></script>
 ```
 
-## Basic usage
+## Basic usage and [Demo](https://votch18.github.io/webtour.js/)
 
 ### Highlight an element
 
