@@ -19,7 +19,7 @@
 
 <style>
     body {
-        overflow-x: hidden;
+        overflow-x: hidden!important;
     }
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Open Sans' sans-serif;        
@@ -110,8 +110,8 @@
   <div class="py-5">
     <div class="container">
 
-      <div class="row">
-        <div class="col-md-8 offset-md-2 pb-5">
+      <div class="row" style="max-width: 100%;">
+        <div class="col-md-6 offset-md-3 pb-5">
           <div class="card shadow-sm">           
             <div class="card-body px-4 pb-5">
                 <div id="features" class="mb-5">
@@ -280,7 +280,7 @@ wt.start();</code></pre>
                     {
                         element: '#dynamictarget',
                         title: 'I\'m a dynamically created element!',
-                        placement: 'bottom-start',
+                        placement: 'top-end',
                         onNext: function(){
                             var dynamicTarget = document.querySelector('#dynamictarget');
                             dynamicTarget.remove();                    

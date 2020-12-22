@@ -270,7 +270,7 @@ export default class WebTour {
         if (element) {
             this.positionPopover(element, popover, arrow, step);
             if (this.options.highlight){
-                this.createOverlay(element);
+                this.createOverlay(element, step);
             }            
         }
         /**
@@ -495,7 +495,10 @@ export default class WebTour {
         }            
     }
 
-    createOverlay(element){
+    createOverlay(element, step = null){
+
+        var strategy = step.strategy || 'absolute';
+
         var overlay1 = document.createElement('div');
         overlay1.classList.add('wt-overlay', 'open', 'overlay1');
         overlay1.style.zIndex = this.options.zIndex - 10;
@@ -526,28 +529,28 @@ export default class WebTour {
         var highlight_offset = this.options.highlightOffset;
 
         //overlays top-left
-        overlay1.style.position = 'absolute';
+        overlay1.style.position = strategy;
         overlay1.style.top = 0;
         overlay1.style.width =  el_left - highlight_offset + 'px';
         overlay1.style.height =  (el_top + element.offsetHeight + highlight_offset) + 'px';
         overlay1.style.left = 0;
 
         //overlays top-right
-        overlay2.style.position = 'absolute';
+        overlay2.style.position = strategy;
         overlay2.style.top = 0;
         overlay2.style.right = 0;
         overlay2.style.height = (el_top - highlight_offset) + 'px';
         overlay2.style.left = (el_left - highlight_offset) + 'px';
 
         //overlays bottom-right
-        overlay3.style.position = 'absolute';
+        overlay3.style.position = strategy;
         overlay3.style.top = (el_top - highlight_offset) + 'px';
         overlay3.style.right = 0;
         overlay3.style.bottom = 0 - (this.document.body.offsetHeight - this.window.innerHeight) + 'px';
         overlay3.style.left = (el_left + element.offsetWidth + highlight_offset) + 'px';
 
         //overlays bottom-left
-        overlay4.style.position = 'absolute';
+        overlay4.style.position = strategy;
         overlay4.style.top = (el_top + element.offsetHeight + highlight_offset) + 'px';
         overlay4.style.width =   el_left + element.offsetWidth + highlight_offset  + 'px';
         overlay4.style.bottom = 0 - (this.document.body.offsetHeight - this.window.innerHeight) + 'px';
