@@ -1,37 +1,46 @@
 export default class WebTour {    
     constructor(options = {}) {
        
-    this.options = {
-        animate: true,
-        opacity: 0.5,
-        offset: 20,
-        borderRadius: 3,
-        allowClose: true,
-        highlight: true,
-        highlightOffset: 5,
-        keyboard: true,
-        width: '300px',
-        zIndex: 10050,
-        removeArrow: false,
-        onNext: () => null,
-        onPrevious: () => null,
-        ...options,
-        }
-           
-    this.steps = [];
-    this.stepIndex = 0;
-    this.isRunning = false;
-    this.isPaused = false;
-    //elements
-    this.window = window;
-    this.document = document;
+        this.options = {
+            animate: true,
+            opacity: 0.5,
+            offset: 20,
+            borderRadius: 3,
+            allowClose: true,
+            highlight: true,
+            highlightOffset: 5,
+            keyboard: true,
+            width: '300px',
+            zIndex: 10050,
+            removeArrow: false,
+            onNext: () => null,
+            onPrevious: () => null,
+            ...options,
+            }
 
-    //events
-    this.onClick = this.onClick.bind(this);
-        this.onResize = this.onResize.bind(this);
-        this.onKeyUp = this.onKeyUp.bind(this);
-        
-        this.bind();
+            if (!!this.constructor.instance) {
+                return this.constructor.instance;
+            }
+    
+            this.constructor.instance = this;
+    
+            
+            this.steps = [];
+            this.stepIndex = 0;
+            this.isRunning = false;
+            this.isPaused = false;
+            //elements
+            this.window = window;
+            this.document = document;
+
+            //events
+            this.onClick = this.onClick.bind(this);
+            this.onResize = this.onResize.bind(this);
+            this.onKeyUp = this.onKeyUp.bind(this);
+            
+            this.bind();
+
+            return this;
 
     }
 
@@ -359,8 +368,8 @@ export default class WebTour {
 
     //position popover
     positionPopover(element, popover, arrow, step) {
-        var placement = step.placement ? step.placement : 'auto';
-        var strategy = step.strategy ? step.strategy : 'absolute';
+        var placement = step.placement || 'auto';
+        var strategy = step.strategy || 'absolute';
 
         popover.style.position = strategy;
         arrow.style.position = 'absolute';
@@ -496,8 +505,7 @@ export default class WebTour {
     }
 
     createOverlay(element, step = null){
-
-        var strategy = step.strategy || 'absolute';
+        var strategy = (step && step.strategy) ? step.strategy : 'absolute';
 
         var overlay1 = document.createElement('div');
         overlay1.classList.add('wt-overlay', 'open', 'overlay1');
