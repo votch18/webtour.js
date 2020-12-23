@@ -1,6 +1,11 @@
 export default class WebTour {    
     constructor(options = {}) {
-       
+        if (!!this.constructor.instance) {
+            return this.constructor.instance;
+        }
+
+        this.constructor.instance = this;
+
         this.options = {
             animate: true,
             opacity: 0.5,
@@ -16,31 +21,25 @@ export default class WebTour {
             onNext: () => null,
             onPrevious: () => null,
             ...options,
-            }
+        }
 
-            if (!!this.constructor.instance) {
-                return this.constructor.instance;
-            }
-    
-            this.constructor.instance = this;
-    
-            
-            this.steps = [];
-            this.stepIndex = 0;
-            this.isRunning = false;
-            this.isPaused = false;
-            //elements
-            this.window = window;
-            this.document = document;
+        this.steps = [];
+        this.stepIndex = 0;
+        this.isRunning = false;
+        this.isPaused = false;
 
-            //events
-            this.onClick = this.onClick.bind(this);
-            this.onResize = this.onResize.bind(this);
-            this.onKeyUp = this.onKeyUp.bind(this);
-            
-            this.bind();
+        //elements
+        this.window = window;
+        this.document = document;
 
-            return this;
+        //events
+        this.onClick = this.onClick.bind(this);
+        this.onResize = this.onResize.bind(this);
+        this.onKeyUp = this.onKeyUp.bind(this);
+        
+        this.bind();
+
+        return this;
 
     }
 
@@ -119,10 +118,14 @@ export default class WebTour {
     }
 
 
-    highlight(element){
+    highlight(element, step = null){
         var element = this.document.querySelector(element);
         if (element){
-            this.createOverlay(element)
+            if (step){
+                this.render(step);
+            }else{
+                this.createOverlay(element, step);
+            }
         }        
     }
 
@@ -249,7 +252,11 @@ export default class WebTour {
         arrow.classList.add('wt-arrow');
         arrow.setAttribute('data-popper-arrow', 'true');
         title.classList.add('wt-title');
+        if (step.title) popoverInner.append(title);
+
         content.classList.add('wt-content');
+        popoverInner.append(content);
+
         btnNext.classList.add('wt-btns', 'wt-btn-next');
         btnBack.classList.add('wt-btns', 'wt-btn-back');
         if (step.placement) popover.classList.add(step.placement); //add user define placement to class for position in css
@@ -260,17 +267,19 @@ export default class WebTour {
         btnNext.innerHTML = (step.btnNext && step.btnNext.text ? step.btnNext.text : (this.stepIndex == this.steps.length - 1 ? 'Done' : 'Next &#8594;'));
         btnBack.innerHTML = (step.btnBack && step.btnBack.text ? step.btnBack.text : (this.stepIndex == 0 ? 'Close' : '	&#8592; Back'));
 
-        //add styles
-        btnNext.style.backgroundColor = (step.btnNext && step.btnNext.backgroundColor ? step.btnNext.backgroundColor : '#7cd1f9');
-        btnBack.style.backgroundColor = (step.btnBack && step.btnBack.backgroundColor ? step.btnBack.backgroundColor : '#efefef;');
-        btnNext.style.color = (step.btnNext && step.btnNext.textColor ? step.btnNext.textColor : '#fff');
-        btnBack.style.color = (step.btnBack && step.btnBack.textColor ? step.btnBack.textColor : '#555');
+        const showBtns = step.showBtns || true;
 
-        ///combine popover component
-        if (step.title) popoverInner.append(title);
-        popoverInner.append(content);
-        popoverInner.append(btnNext);
-        popoverInner.append(btnBack);
+        if (showBtns){
+            //add styles
+            btnNext.style.backgroundColor = (step.btnNext && step.btnNext.backgroundColor ? step.btnNext.backgroundColor : '#7cd1f9');
+            btnNext.style.color = (step.btnNext && step.btnNext.textColor ? step.btnNext.textColor : '#fff');
+
+            btnBack.style.backgroundColor = (step.btnBack && step.btnBack.backgroundColor ? step.btnBack.backgroundColor : '#efefef;');
+            btnBack.style.color = (step.btnBack && step.btnBack.textColor ? step.btnBack.textColor : '#555');
+            popoverInner.append(btnNext);
+            popoverInner.append(btnBack);
+        }
+        
         popover.append(arrow);
         popover.append(popoverInner);
 
@@ -474,7 +483,7 @@ export default class WebTour {
 
             //left
         else if (placement == 'right') {
-            popover.style.top = (el_top + (popover.offsetHeight / 2) - ((element.offsetHeight + this.options.highlightOffset) / 2)) + 'px';
+            popover.style.top = (el_top + (Math.abs(popover.offsetHeight - element.offsetHeight) / 2)) + 'px';
             popover.style.left = (el_left + (element.offsetWidth + this.options.offset)) + 'px';
         } else if (placement == 'right-start') {
             popover.style.top = el_top - this.options.highlightOffset + 'px';
@@ -484,9 +493,9 @@ export default class WebTour {
             popover.style.left = (el_left + (element.offsetWidth + this.options.offset)) + 'px';
         }
 
-            //right
+        //right
         else if (placement == 'left') {
-            popover.style.top = (el_top + (popover.offsetHeight / 2) - ((element.offsetHeight + this.options.highlightOffset) / 2)) + 'px';
+            popover.style.top = (el_top + (Math.abs(popover.offsetHeight - element.offsetHeight) / 2)) + 'px';
             popover.style.left = (el_left - (popover.offsetWidth + this.options.offset)) + 'px';
         } else if (placement == 'left-start') {
             popover.style.top = el_top - this.options.highlightOffset + 'px';
