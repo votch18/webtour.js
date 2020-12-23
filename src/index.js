@@ -122,7 +122,10 @@ export default class WebTour {
         var element = this.document.querySelector(element);
         if (element){
             if (step){
-                this.render(step);
+                this.steps = null;
+                this.stepIndex = 0;
+                this.steps.push(step);
+                this.render(this.steps[this.stepIndex]);
             }else{
                 this.createOverlay(element, step);
             }
@@ -220,17 +223,11 @@ export default class WebTour {
         }
 
         //popover
-        const popover = this.document.createElement('div');
-        const popoverInner = this.document.createElement('div');
-        const arrow = this.document.createElement('div');
-        const title = this.document.createElement('div');
-        const content = this.document.createElement('div');
-        const btnNext = this.document.createElement('button');
-        const btnBack = this.document.createElement('button');
-
+        const popover = this.document.createElement('div');        
         popover.classList.add('wt-popover');
         popover.style.borderRadius = this.options.borderRadius + 'px';
         popover.style.zIndex = this.options.zIndex + 10;
+        if (step.placement) popover.classList.add(step.placement); //add user define placement to class for position in css
 
         if (this.options.width) {
             if (typeof this.options.width === 'string') {
@@ -248,28 +245,35 @@ export default class WebTour {
             }
         }
 
+        //popover inner container
+        const popoverInner = this.document.createElement('div');
         popoverInner.classList.add('wt-popover-inner');
-        arrow.classList.add('wt-arrow');
-        arrow.setAttribute('data-popper-arrow', 'true');
+       
+        //title
+        const title = this.document.createElement('div');
         title.classList.add('wt-title');
         if (step.title) popoverInner.append(title);
+        if (step.title) title.innerText = step.title;
 
+        //content
+        const content = this.document.createElement('div');
         content.classList.add('wt-content');
         popoverInner.append(content);
-
-        btnNext.classList.add('wt-btns', 'wt-btn-next');
-        btnBack.classList.add('wt-btns', 'wt-btn-back');
-        if (step.placement) popover.classList.add(step.placement); //add user define placement to class for position in css
-
-        //add text
-        if (step.title) title.innerText = step.title;
         content.innerHTML = (step.content ? step.content : '');
-        btnNext.innerHTML = (step.btnNext && step.btnNext.text ? step.btnNext.text : (this.stepIndex == this.steps.length - 1 ? 'Done' : 'Next &#8594;'));
-        btnBack.innerHTML = (step.btnBack && step.btnBack.text ? step.btnBack.text : (this.stepIndex == 0 ? 'Close' : '	&#8592; Back'));
-
-        const showBtns = step.showBtns || true;
+        
+        //buttons
+        const showBtns = (step.showBtns == null || step.showBtns == 'undefined') ? true : Boolean(step.showBtns);
 
         if (showBtns){
+            const btnNext = this.document.createElement('button');
+            const btnBack = this.document.createElement('button');
+
+            btnNext.classList.add('wt-btns', 'wt-btn-next');
+            btnBack.classList.add('wt-btns', 'wt-btn-back');
+
+            btnNext.innerHTML = (step.btnNext && step.btnNext.text ? step.btnNext.text : (this.stepIndex == this.steps.length - 1 ? 'Done' : 'Next &#8594;'));
+            btnBack.innerHTML = (step.btnBack && step.btnBack.text ? step.btnBack.text : (this.stepIndex == 0 ? 'Close' : '	&#8592; Back'));
+
             //add styles
             btnNext.style.backgroundColor = (step.btnNext && step.btnNext.backgroundColor ? step.btnNext.backgroundColor : '#7cd1f9');
             btnNext.style.color = (step.btnNext && step.btnNext.textColor ? step.btnNext.textColor : '#fff');
@@ -279,10 +283,17 @@ export default class WebTour {
             popoverInner.append(btnNext);
             popoverInner.append(btnBack);
         }
-        
+
+        //popover arrow
+        const arrow = this.document.createElement('div');
+        arrow.classList.add('wt-arrow');
+        arrow.setAttribute('data-popper-arrow', 'true');
         popover.append(arrow);
+
+        //popover inner container
         popover.append(popoverInner);
 
+        //append popover to body
         this.document.body.appendChild(popover);
 
         if (element) {
