@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" integrity="sha512-PgQMlq+nqFLV4ylk1gwUOgm6CtIIXkKwaIHp/PAIWHzig/lKZSEGKEysh0TCVbHJXCLN7WetD8TFecIky75ZfQ==" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.1/styles/default.min.css" integrity="sha512-kZqGbhf9JTB4bVJ0G8HCkqmaPcRgo88F0dneK30yku5Y/dep7CZfCnNml2Je/sY4lBoqoksXz4PtVXS4GHSUzQ==" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.1/styles/darcula.min.css" integrity="sha512-0+Gq7jQLhuoMdL8EednGo8delKMhKim1t3XrvVGTqbJPfyv5f4HUJ0DTEN+3E+aM4RGEEfmVJOiomnP9olm4iw==" crossorigin="anonymous" />
-    <link href="https://unpkg.com/webtour@1.0.0/dist/webtour.min.css" rel="stylesheet">
+    <link href="../dist/webtour.min.css" rel="stylesheet">
 
 <style>
     body {
@@ -75,13 +75,51 @@
         font-weight: bolder;
     }
 
+    .placement {
+        height: 100px;
+        width: 100px;
+        display: flex;
+    }
+
+    .d-flex {
+        display: flex;
+    }
+
+    input[type=radio]:after {
+        width: 20px;
+        height: 20px;
+        border-radius: 20px;
+        top: -2px;
+        left: -1px;
+        position: relative;
+        background-color:#7A7A7A;
+        content: '';
+        display: inline-block;
+        visibility: visible;
+        border: 2px solid white;
+    }
+
+    input[type=radio]:checked:after {
+        width: 20px;
+        height: 20px;
+        border-radius: 20px;
+        top: -2px;
+        left: -1px;
+        position: relative;
+        background-color:#0DCAF0;
+        content: '';
+        display: inline-block;
+        visibility: visible;
+        border: 2px solid #0DCAF0;
+    }
+
 </style>
   </head>
   <body>
     
 <header> 
   <div class="navbar navbar-white bg-white shadow-sm">
-    <div class="container-fluid container-lg">
+    <div class="container-fluid container-xl">
       <a href="#" class="navbar-brand d-flex align-items-center">
           <img src="assets/webtour.svg" style="margin-right: 10px;">
         <b>WEBTOUR JS</b>
@@ -96,7 +134,7 @@
 <main>
   <section class="pt-5 text-center">
     <div class="row">
-      <div class="col-lg-6 col-md-8 mx-auto">
+      <div class="col-xl-6 col-lg-8 mx-auto">
         <h1 class="fw-bold" id="title">A light-weight user's step-by-step guide for your website using Vanilla JS.</h1>
         <p class="lead text-muted"></p>
         <p>          
@@ -111,7 +149,7 @@
     <div class="container">
 
       <div class="row" style="max-width: 100%;">
-        <div class="col-md-6 offset-md-3 pb-5">
+        <div class="col-lg-6 offset-lg-3 pb-5">
           <div class="card shadow-sm">           
             <div class="card-body px-4 pb-5">
                 <div id="features" class="mb-5">
@@ -183,6 +221,43 @@ wt.setSteps(steps);
 wt.start();</code></pre>         
                     <button class="btn btn-info btn-demo w-100" id="btn-guide">Show Me</button>       
                 </div>
+
+                <div>
+                    <h4 class="my-3">Placement</h4>
+                    <p>Similar to <a href="https://popper.js.org/">Popover JS</a> placement. <em>(top, top-start, top-end, right, right-start, right-end, left, left-start, left-end, bottom, bottom-start, bottom-end, auto)</em></p>           
+                    <div id="positioning" style="display: flex; align-items: center; justify-content: space-between; background: #7A7A7A; padding: 15px;">
+                        <div>
+                            <div class="placement" style="flex-direction: column; align-items: flex-start; justify-content: space-between;">
+                                <input type="radio" name="placement" value="left-start">
+                                <input type="radio" name="placement" value="left">
+                                <input type="radio" name="placement" value="left-end">
+                            </div>
+                           
+                        </div>
+                        <div>
+                            <div class="placement" style="align-items: flex-start; justify-content: space-between;">
+                                <input type="radio" name="placement" value="top-start">
+                                <input type="radio" name="placement" value="top">
+                                <input type="radio" name="placement" value="top-end">
+                            </div>
+                            <div class="placement" id="placement_target" style="background: url('./assets/webtour.svg') #0DCAF0 50% 50% no-repeat;"></div>
+                            <div class="placement" style="align-items: flex-end; justify-content: space-between;">
+                                <input type="radio" name="placement" value="bottom-start">
+                                <input type="radio" name="placement" value="bottom">
+                                <input type="radio" name="placement" value="bottom-end">
+                            </div>
+                        </div>
+                        <div>
+                          
+                            <div class="placement" style="flex-direction: column; align-items: flex-end; justify-content: space-between;">
+                                <input type="radio" name="placement" value="right-start">
+                                <input type="radio" name="placement" value="right">
+                                <input type="radio" name="placement" value="right-end">
+                            </div>
+                           
+                        </div>                        
+                    </div>    
+                </div>
                 
             </div>
           </div>
@@ -207,7 +282,7 @@ wt.start();</code></pre>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/codemirror.min.js" integrity="sha512-zuvaVNiXwWY7U7HEdXsoTislTEElpKLELFoyQw0Bg7zfGhC4vG8eAhCxIQAvHmprW7dFhTq5zshUko4K3B4mSA==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.1/highlight.min.js" integrity="sha512-DrpaExP2d7RJqNhXB41Q/zzzQrtb6J0zfnXD5XeVEWE8d9Hj54irCLj6dRS3eNepPja7DvKcV+9PnHC7A/g83A==" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/webtour@1.0.0/dist/webtour.min.js"></script>
+    <script src="../dist/webtour.min.js"></script>
 
     <script>
 
@@ -367,7 +442,21 @@ wt.start();</code></pre>
                 wt.start();  
 
             })
-    
+
+            this.document.querySelectorAll('input[name="placement"]').forEach((element) => {
+                element.addEventListener("click", function() {
+                    const wt = new WebTour({highlightOffset: 10});
+                    const step = [{
+                        element: '#placement_target',
+                        title: element.value,
+                        placement: element.value,
+                        width: 200,
+                        showBtns: false,
+                    }];
+                    wt.highlight('#placement_target', step);
+                });
+            })
+
         }
 
         
