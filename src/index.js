@@ -117,14 +117,14 @@ export default class WebTour {
         return this.steps;
     }
 
-
     highlight(element, step = null){
+        this.isRunning = true;
         var element = this.document.querySelector(element);
         if (element){
             if (step){
                 this.steps = null;
                 this.stepIndex = 0;
-                this.steps.push(step);
+                this.steps = step;
                 this.render(this.steps[this.stepIndex]);
             }else{
                 this.createOverlay(element, step);
