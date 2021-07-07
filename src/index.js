@@ -360,16 +360,23 @@ export default class WebTour {
     getOffset( el ) {
         var _x = 0;
         var _y = 0;
+        var rect = el.getBoundingClientRect();
+
         while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) ) {
             _x += el.offsetLeft - el.scrollLeft;
             _y += el.offsetTop - el.scrollTop;
             el = el.offsetParent;
         }
-        return { top: _y, left: _x };
+        
+        _y = parseInt(rect.y) > parseInt(_y) ? rect.y : _y;
+        _x = parseInt(rect.x) > parseInt(_x) ? rect.x : _x;
+       
+        return { top:  _y , left: _x };
     }
 
     //get css transform property to fixed issues with transform elements
     getTranslateXY(element) {
+        
         const style = window.getComputedStyle(element)
         const matrix = new DOMMatrixReadOnly(style.transform)
 
@@ -379,10 +386,29 @@ export default class WebTour {
         }
     }
 
+    //get css transform property to fixed issues with transform elements
+    getTranslate3D(element){
+        var transform = window.getComputedStyle(element, null).getPropertyValue('-webkit-transform');
+        var results = transform.match(/matrix(?:(3d)\(-{0,1}\d+(?:, -{0,1}\d+)*(?:, (-{0,1}\d+))(?:, (-{0,1}\d+))(?:, (-{0,1}\d+)), -{0,1}\d+\)|\(-{0,1}\d+(?:, -{0,1}\d+)*(?:, (-{0,1}.+))(?:, (-{0,1}.+))\))/);
+
+        let x, y, z;
+        if (!results) {            
+            return { X: 0, Y: 0, Z: 0 };
+        }
+        if (results[1] == '3d') {
+            [x, y, z] = results.slice(2, 5);
+            return { X: x, Y: y, Z: z };            
+        }
+
+        results.push(0);
+        [x, y, z] = results.slice(5, 8);
+        return { X: x, Y: y, Z: z };      
+    }
+
     getElementPosition(element){
         return {
-            top: this.getOffset(element).top - (element.style.transform ? this.getTranslateXY(element).translateY : 0),
-            left: this.getOffset(element).left -( element.style.transform ? this.getTranslateXY(element).translateX : 0)
+            top: (this.getOffset(element).top + this.getTranslate3D(element).Y) - (element.style.transform ? this.getTranslateXY(element).translateY : 0),
+            left: (this.getOffset(element).left + this.getTranslate3D(element).X) -( element.style.transform ? this.getTranslateXY(element).translateX : 0)
         }
     }
 
